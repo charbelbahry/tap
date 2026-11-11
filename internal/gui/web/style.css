@@ -1,0 +1,8 @@
+/* Owner: Role C. Pixel components go here. Fonts go in assets/. */
+
+body {
+  background: #0c0910;
+  color: #ddd3bb;
+  font-family: monospace;
+  padding: 16px;
+}

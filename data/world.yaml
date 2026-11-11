@@ -1,0 +1,50 @@
+# The Last Vigil world data.
+# Owner: Role B. This is a starter with two rooms to show the format.
+# Replace it with the full world from PLAN.md section 7 (11 rooms, 9 NPCs, 8 items, 5 quests).
+
+world:
+  start: loc.votive_chapel
+  safe_room: loc.votive_chapel
+  rooms:
+    loc.votive_chapel:
+      name: "Votive Chapel"
+      description: "Candles burn without wax beneath a roof that fell in long ago. Nothing hostile crosses this threshold."
+      exits: { east: loc.pilgrims_road }
+      items: [item.pilgrims_candle]
+      npcs: [npc.sister_ilvane]
+
+    loc.pilgrims_road:
+      name: "Pilgrim's Road"
+      description: "Grave markers line a road to nowhere. A sentry still walks its post, though most of it has rotted away."
+      exits: { west: loc.votive_chapel }
+      npcs: [npc.rotting_sentry]
+
+items:
+  item.pilgrims_candle:
+    name: "Pilgrim's Candle"
+    description: "A stub of wax that refuses to burn down."
+    obtainable: true
+
+npcs:
+  npc.sister_ilvane:
+    name: "Sister Ilvane"
+    description: "Keeper of the last candle."
+    role: quest_giver
+    dialogue:
+      - "The flame holds you here, Vigilant. I am sorry for that."
+      - "Every time you fall, the candle pulls you back. It has never asked if you wanted that."
+
+  npc.rotting_sentry:
+    name: "Rotting Sentry"
+    description: "Still guarding a road nobody uses."
+    role: enemy
+    dialogue: ["Halt. Halt. Halt. Halt."]
+    stats: { hp: 30, damage_min: 4, damage_max: 8 }
+
+quests:
+  road_without_watchers:
+    title: "A Road Without Watchers"
+    giver: npc.sister_ilvane
+    description: "Destroy the Rotting Sentry on Pilgrim's Road."
+    objective: { kill: npc.rotting_sentry }
+    reward: { damage_bonus: 2 }

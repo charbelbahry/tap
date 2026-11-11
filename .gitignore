@@ -1,1 +1,12 @@
 ROLE_A_PLAN.md
+
+# Build output
+bin/
+
+# Logs
+*.log
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store

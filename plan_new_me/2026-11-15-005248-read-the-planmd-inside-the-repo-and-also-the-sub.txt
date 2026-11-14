@@ -1,0 +1,1491 @@
+
+❯ read the plan.md inside the repo and also the subject is inside this repo
+  read it its a 42 project follow the stritcly with minimum effort possible but
+  still meeting all the requirment and ask me about the implementation grill
+  me before starting with my plan inside the plan im person of the gui i want a
+  webbased html
+
+  Read 2 files, listed 1 directory, ran 1 shell command (ctrl+o to expand)
+  ⎿  Interrupted · What should Claude do instead?
+
+❯ read the plan.md inside the repo and also the subject is inside this repo
+  read it its a 42 project follow the stritcly with minimum effort possible but
+  still meeting all the requirment and ask me about the implementation grill
+  me before starting with my plan inside the plan im person of the gui i want a
+  webbased html (person c)
+
+  Ran 1 shell command (ctrl+o to expand)
+
+● I've read the subject spec, the RFC and plan.md, and I'm taking the web GUI,
+  Makefile, compliance checklist and README. The repo is empty, so before
+  writing code I need a few decisions that change how much code there is.
+  · summary
+
+● User answered Claude's questions:
+  ⎿  · Browsers can't open raw TCP, so the GUI needs a Go bridge. plan.md gives
+     it to Role A and uses gorilla/websocket. Who writes it, and how? → Role A
+     writes it
+     · How much visual polish for the GUI? The subject only requires function,
+     not art. → Full plan
+     · The repo is empty. What should I set up so the GUI can be built and
+     tested before A and B deliver? → nothing for now we are just planning the
+     implementation is after we agree to the plan
+     · What should I do in this session? → no implementation for now, we just
+     want a plan.md file for my role, everything comes after we agree to the
+     plan
+
+● Artifact(read https://claude.ai/artifact/RqLcMRGdv1nH2nfQcXeJ5j)
+  ⎿  Received 86.1KB (200 OK)
+
+● The mockup sets the layout: header, counters, command bar, story panel, side
+  panels, tabbed chat, log tabs, and a disconnected screen. I'll build the plan
+  from it next round. · summary
+
+● User answered Claude's questions:
+  ⎿  · How much art for the 'Full plan' visuals? Other groups' servers will send
+     room/NPC IDs we've never seen, so every image needs a fallback. → Rooms +
+     NPCs + items
+     · How does the room view stay current? Other groups' servers won't send our
+     EVT ROOM ITEM/COMBAT extensions, so someone else's TAKE is invisible
+     without polling. → Events + 5s silent LOOK (Recommended)
+     · The mockup has an 'Exits and map' panel. A drawn map only works for our
+     own world. What should it show? → Exit buttons + our map (Recommended)
+     · Testing against other groups' servers: should the login screen let you
+     choose the server address, or does the bridge's -server flag decide it?
+     This is a contract with Role A. → Bridge flag only (Recommended)
+
+● User answered Claude's questions:
+  ⎿  · Where should your role plan go? → New plan-role-c.md (Recommended)
+     · plan.md lists four pixel fonts (Jacquard 12, Pixelify Sans, Silkscreen,
+     VT323). How many should be bundled? → Two (Recommended)
+     · Should the 'Raw TAP protocol' tab also have a text box for typing any raw
+     command? → Yes (Recommended)
+
+● I have what I need. Writing the role plan now.
+
+● Write(plan-role-c.md)
+  ⎿  Wrote 434 lines to plan-role-c.md
+       1 # Role C Plan: GUI and Compliance
+       2
+       3 Detailed plan for Role C in [plan.md](plan.md#role-c-gui-and-com
+         pliance). Where this file and `plan.md` disagree, this file is t
+         he proposal and `plan.md` stays the agreed version until the tea
+         m signs off.
+       4
+       5 **Owner:** `<login3>` · **Status:** draft for team review, no co
+         de written yet
+       6
+     … +428 lines (ctrl+o to expand)
+
+● I wrote your Role C plan to /home/ddergham/TAP/plan-role-c.md. I left plan.md
+  unchanged and wrote no code.
+
+  What the plan locks in, from your answers:
+  - Ownership: you write the web page only (HTML/CSS/JS). Role A writes the
+    WebSocket bridge.
+  - Art: the full set of 32 PNGs (11 rooms, 9 NPCs, 8 items, 1 player, 3
+    fallbacks for IDs we don't know), plus two local fonts (Jacquard 12 and
+    VT323).
+  - Room updates: the view refreshes on events, plus a hidden LOOK every 5
+    seconds.
+  - Map: exit buttons always work; the drawn map only appears in our own 11
+    rooms.
+  - Server address: set by the bridge's -server flag, not on the login screen.
+  - Raw input: the "Raw TAP" tab has a box for typing any command.
+
+  Decisions I made that you should check:
+  - Item buttons send the item ID (TAKE item.burial_shroud), never the display
+    name. The RFC guarantees IDs work. The page shows names, and names still
+    work in the raw box.
+  - Your own chat messages are shown locally once the server replies OK, and
+    chat events under your own name are skipped. This works whether or not
+    another group's server sends your messages back to you.
+  - // @ts-check with JSDoc types in app.js. The subject asks for type
+    annotations "where supported", and this gives them with no build step.
+  - The group members list is built only from join and leave events, because the
+    RFC has no command that lists members. If you join a group that already has
+    members, the list can be incomplete; the README will say so.
+
+  What you need from teammates on Day 1 (section 15 of the file):
+  - From A: confirm the bridge contract in section 3 (one WebSocket message per
+    protocol line, /ws path, how closing works), plus the flag names and default
+    ports.
+  - From B: freeze the room, NPC and item IDs in section 4, because every image
+    filename depends on them. Also the exact JSON replies for DEFEND, FLEE,
+    QUEST and QUESTS.
+
+  Some of this changes the team plan, so get the team's agreement before anyone
+  codes:
+  - plan.md section 6: its Role C art note talks only about sprites and room
+    art. Item icons are new here.
+  - plan.md section 4: it lists four fonts; this plan uses two.
+
+  I based the layout on your linked mockup.
+
+✻ Crunched for 3m 47s · done Tuesday 10:44 PM
+
+❯ /model
+  ⎿  Set model to Opus 5.5 and saved as your default for new sessions
+
+❯ i forgot to tell you about the @protocol-rfc.html we have to follow it also
+  idk if its important for our part but we would fail if we dont follow it,
+  also i want my implementation plan to follow a step by step implementation
+  while explaining each step, follow best practices, and the cleanest
+  approaches so the code always stays readable and understandable and have low
+  complexity, also it should NOT have overengineering, it should be made with
+  the lowest effort possible while still following the rules and still looking
+  good, those are some notes just to make sure we're on the same page
+  ⎿  Read protocol-rfc.html (636 lines)
+
+● I already had the RFC: it's the file inside rfc.tar.gz, and I read it before
+  writing the first plan, so the plan already follows it. What was missing is a
+  section that maps each RFC rule to the GUI, and the step-by-step format. I'm
+  rewriting the plan for both, and cutting the parts that were more than the
+  rules need.
+
+● Write(plan-role-c.md)
+  ⎿  Added 347 lines, removed 294 lines
+       1  # Role C Plan: GUI and Compliance
+       2  
+       3 -Detailed plan for Role C in [plan.md](plan.md#role-c-gui-and-co
+         -mpliance). Where this file and `plan.md` disagree, this file is
+         - the proposal and `plan.md` stays the agreed version until the 
+         -team signs off.                                                
+       3 +Step-by-step plan for Role C in [plan.md](plan.md#role-c-gui-an
+         +d-compliance). It follows the subject (v1.4) and **RFC 42TAP** 
+         +(`protocol-rfc.html`). Where it differs from `plan.md`, this fi
+         +le is a proposal until the team agrees.                        
+       4  
+       5  **Owner:** `<login3>` · **Status:** draft for team review, no c
+          ode written yet
+       6  
+       7  **Contents**
+       8  
+       9  1. [Scope](#1-scope)
+      10 -2. [Decisions taken](#2-decisions-taken)                       
+      11 -3. [Contract with Role A (bridge)](#3-contract-with-role-a-brid
+         -ge)                                                            
+      12 -4. [Contract with Role B (world and IDs)](#4-contract-with-role
+         --b-world-and-ids)                                              
+      13 -5. [Files](#5-files)                                           
+      14 -6. [Layout](#6-layout)                                         
+      15 -7. [How app.js works](#7-how-appjs-works)                      
+      16 -8. [Feature by feature](#8-feature-by-feature)                 
+      17 -9. [Art and fonts](#9-art-and-fonts)                           
+      18 -10. [Makefile](#10-makefile)                                   
+      19 -11. [Compliance and testing](#11-compliance-and-testing)       
+      20 -12. [README sections I own](#12-readme-sections-i-own)         
+      21 -13. [Steps and timeline](#13-steps-and-timeline)               
+      22 -14. [Evaluation prep](#14-evaluation-prep)                     
+      23 -15. [Open questions for the team](#15-open-questions-for-the-te
+         -am)                                                            
+      10 +2. [Rules for the code](#2-rules-for-the-code)                 
+      11 +3. [What the RFC means for the GUI](#3-what-the-rfc-means-for-t
+         +he-gui)                                                        
+      12 +4. [Decisions](#4-decisions)                                   
+      13 +5. [Agreements needed from A and B](#5-agreements-needed-from-a
+         +-and-b)                                                        
+      14 +6. [Files](#6-files)                                           
+      15 +7. [Implementation steps](#7-implementation-steps)             
+      16 +8. [Compliance and testing](#8-compliance-and-testing)         
+      17 +9. [README sections I own](#9-readme-sections-i-own)           
+      18 +10. [Evaluation prep](#10-evaluation-prep)                     
+      19  
+      20  ---
+      21  
+     ...
+       23  
+       24  | I own | I don't own |
+       25  |---|---|
+       31 -| `internal/gui/web/index.html`, `style.css`, `app.js`, `asset
+          -s/` | `internal/gui/bridge.go` and `cmd/gui/main.go` (Role A) 
+          -|                                                             
+       32 -| `Makefile` | Server, game logic, world file (Roles A and B) 
+          -|                                                             
+       33 -| Running the [compliance checklist](plan.md#10-compliance-che
+          -cklist) and reporting bugs | Fixing server bugs (I report them
+          - to the owner) |                                              
+       34 -| Assembling `README.md`, and writing Building and Running, Te
+          -sting, Protocol Implementation | The README sections owned by 
+          -A and B |                                                     
+       26 +| `internal/gui/web/`: `index.html`, `style.css`, `app.js`, `a
+          +ssets/` | `internal/gui/bridge.go`, `cmd/gui/main.go` (Role A)
+          + |                                                            
+       27 +| `Makefile` | Server, game logic, world file (A and B) |     
+       28 +| Running the [compliance checklist](plan.md#10-compliance-che
+          +cklist) and reporting bugs | Fixing server bugs |             
+       29 +| Assembling `README.md` and writing Building and Running, Tes
+          +ting, Protocol Implementation | A's and B's README sections | 
+       30  
+       36 -**What "done" means for the GUI:** every bullet in subject sec
+          -tion V.4 works against our server **and** against a server tha
+          -t only speaks the plain RFC (no extensions).                  
+       31 +**Done means:** every subject V.4 bullet works against our ser
+          +ver **and** against a server that speaks only the plain RFC, w
+          +ith no extensions.                                            
+       32  
+       33 +**Size target:** `index.html` about 120 lines, `style.css` abo
+          +ut 250, `app.js` about 400. If a step goes well past this, it'
+          +s probably overengineered.                                    
+       34 +                                                              
+       35  ---
+       36  
+       40 -## 2. Decisions taken                                         
+       37 +## 2. Rules for the code                                      
+       38  
+       42 -| Topic | Decision | Why |                                    
+       43 -|---|---|---|                                                 
+       44 -| Toolkit | Plain HTML/CSS/JS page, embedded in the Go binary 
+          -by A's bridge. No framework, no build step, no CDN | The subje
+          -ct allows web-based GUIs; nothing to install; runs the same on
+          - Ubuntu and Windows |                                         
+       45 -| Bridge | Written by Role A, WebSocket as in `plan.md` | Keep
+          -s file ownership clean |                                      
+       46 -| Visuals | Full plan: pixel CSS components, room scenes, NPC 
+          -sprites, item icons | Team choice |                           
+       47 -| Art set | 11 rooms, 9 NPCs, 8 items, 1 player, plus 3 fallba
+          -cks (room, NPC, item): **32 PNGs** | Every unknown ID from ano
+          -ther group's server gets a fallback |                         
+       48 -| Fonts | Two, stored locally: **Jacquard 12** (titles) and **
+          -VT323** (everything else) | Full look with fewer files and lic
+          -enses |                                                       
+       49 -| Room refresh | Events, plus a silent `LOOK` every 5 seconds 
+          -| Other servers won't send our item events |                  
+       50 -| Map | Exit buttons always; a drawn map of our 11 rooms only 
+          -when the room ID is one of ours | Works on any server, looks g
+          -ood on ours |                                                 
+       51 -| Server address | Chosen by the bridge's `-server` flag only,
+          - not on the login screen | Bridge stays simple and isn't an op
+          -en proxy |                                                    
+       52 -| Raw input | Text box in the "Raw TAP" tab that sends any lin
+          -e as typed | Lets evaluators and other servers' extra commands
+          - work without new buttons |                                   
+       53 -| Sending items | Buttons always send the **canonical ID** (`T
+          -AKE item.burial_shroud`) | The RFC guarantees IDs work; displa
+          -y names are for showing only |                                
+       54 -| Own chat messages | Shown locally on `OK`, and chat events f
+          -rom my own name are ignored | Works whether or not a server ec
+          -hoes chat back to the sender |                                
+       55 -| Types | `// @ts-check` at the top of `app.js` with JSDoc typ
+          -es | Gives type annotations (subject: "where supported") with 
+          -no build step |                                               
+       39 +These keep the GUI easy to read, explain and change live at ev
+          +aluation.                                                     
+       40  
+       41 +1. **Three files, three jobs.** HTML is structure, CSS is look
+          +s, JS is behavior. No inline styles or scripts.               
+       42 +2. **No framework, no build step, no modules, no classes.** On
+          +e `app.js` loaded with `<script defer>`, written as plain func
+          +tions.                                                        
+       43 +3. **One state object.** Handlers change `state`, then call `r
+          +ender()`. Render functions only read `state` and draw. Data ne
+          +ver flows the other way.                                      
+       44 +4. **Small functions with one job each**, named after what the
+          +y do: `renderRoom`, `handleLook`, `send`.                     
+       45 +5. **Constants at the top**, such as `POLL_MS = 5000`, so live
+          + changes are one-line edits.                                  
+       46 +6. **Server text goes in with `textContent` only, never `inner
+          +HTML`.** This is the one security rule, and it's not negotiabl
+          +e.                                                            
+       47 +7. **Comments explain why, not what.** For example: `// replie
+          +s have no ID, so match them in order (RFC 4.3)`.              
+       48 +8. **No feature the subject or RFC doesn't ask for**, unless i
+          +t costs a few lines and makes the GUI clearly nicer.          
+       49 +9. **`// @ts-check` at the top of `app.js`**, with JSDoc types
+          + on the state object and main functions. This covers the subje
+          +ct's "type annotations where supported" with no tooling.      
+       50 +                                                              
+       51  ---
+       52  
+       59 -## 3. Contract with Role A (bridge)                           
+       53 +## 3. What the RFC means for the GUI                          
+       54  
+       61 -This is what I build against. A only needs to confirm it.     
+       55 +The RFC is written mostly for servers, but these parts bind th
+          +e client. Each one maps to a step below.                      
+       56  
+       63 -| Item | Value |                                              
+       57 +| RFC section | Rule | How the GUI follows it | Step |        
+       58 +|---|---|---|---|                                             
+       59 +| 2, 4.1 | One UTF-8 message per line, ending in LF | Every in
+          +put is a single-line `<input>`, so no `\n` can get into a comm
+          +and. The bridge adds the LF. WebSocket text is always UTF-8 | 
+          +4, 6 |                                                        
+       60 +| 3.2 | The server sends `OK hello proto=1` first | The first 
+          +line is matched to a `GREETING` entry in the pending queue | 6
+          + |                                                            
+       61 +| 3.1, 3.3 | `CONNECT <username>` is the first command; `ERR 2
+          +01 NAME_IN_USE` | The login screen sends only `CONNECT`. Game 
+          +buttons appear only after `OK connected`. Errors show under th
+          +e name field | 5 |                                            
+       62 +| 3.3 (Termination) | `QUIT` → `OK bye`, or abrupt close | Bot
+          +h lead to the disconnected screen | 5 |                       
+       63 +| 4.2 | Command names are case-insensitive | The GUI always se
+          +nds uppercase; raw input sends whatever you type | 6 |        
+       64 +| 4.3 | Replies start with `OK` or `ERR` and carry no request 
+          +ID | Pending queue: replies are matched to commands in order |
+          + 6 |                                                          
+       65 +| 4.4, 7 | Events are `EVT <category> <type> <data>` | One eve
+          +nt handler table. Unknown events are logged and ignored | 9 | 
+       66 +| 5 | Every command and its reply format | A button for each c
+          +ommand, and a parser for each reply (section 7, step 7) | 7, 8
+          + |                                                            
+       67 +| 6.2 | All ROOM, GLOBAL, GROUP and STATS events | All handled
+          + in the event table | 9 |                                     
+       68 +| 8.2 | Error codes 201-901 | Every `ERR` is shown in the game
+          + log | 6 |                                                    
+       69 +| 7.3 (Error Recovery) | 4xx means continue; 9xx may need a re
+          +connect | 4xx: log it and carry on. 9xx: log it; if the server
+          + closes, offer "Connect again" | 5 |                          
+       70 +| 8.3 | Items can be referred to by canonical ID or display na
+          +me | Buttons send the ID, which always works. Labels show a re
+          +adable name. Raw input accepts either | 7 |                   
+       71 +| 8.4 | Clients SHOULD handle multi-word names | Names are sho
+          +wn as written; the whole rest of the line is the argument | 7 
+          +|                                                             
+       72 +| 9.2 | Unicode in names and messages | Shown as-is with `text
+          +Content`; no special handling needed | 5, 9 |                 
+       73 +| 9.4 | Lines limited to about 1024 bytes | Chat input `maxlen
+          +gth="250"` (250 × 4 UTF-8 bytes + `CHAT GLOBAL ` < 1024) | 9 |
+       74 +                                                              
+       75 +**RFC problems that affect the GUI**                          
+       76 +                                                              
+       77 +| Problem | What the GUI does |                               
+       78  |---|---|
+       65 -| Page URL | `http://127.0.0.1:8080/` serves `index.html`; oth
+          -er files under the same path (`/style.css`, `/assets/...`) |  
+       66 -| WebSocket URL | `ws://<same host>/ws` |                     
+       67 -| On WS open | Bridge opens one TCP connection to `-server` (d
+          -efault `127.0.0.1:4242`) |                                    
+       68 -| Server → browser | One WS **text message per protocol line**
+          -, with the `\n` (and any `\r`) removed |                      
+       69 -| Browser → server | One WS text message per command, **withou
+          -t** `\n`; the bridge appends `\n` |                           
+       70 -| TCP closes | Bridge closes the WS (code 1000). The page show
+          -s the disconnected screen |                                   
+       71 -| WS closes | Bridge closes the TCP connection, so the server 
+          -sees a normal disconnect |                                    
+       72 -| TCP connect fails | Bridge closes the WS straight away. The 
+          -page shows "Can't reach the server" |                         
+       73 -| Flags | `-port 8080`, `-server 127.0.0.1:4242` |            
+       79 +| `EVT STATS players=N` has no type word, unlike every other e
+          +vent | Checked as a special case |                            
+       80 +| RFC `WHO` → `OK players=N`, subject example → `OK {"room":[.
+          +.],"server":N}` | Accept both |                               
+       81 +| RFC `TALK` → `OK <text>`, subject example → `OK {"npc":..,"d
+          +ialogue":..}` | Accept both |                                 
+       82 +| `LOOK` returns only IDs for items and NPCs | Readable label 
+          +made from the ID |                                            
+       83  
+       75 -I need nothing else from the bridge: no JSON wrapping and no p
+          -arsing.                                                       
+       84 +**GUI deviations from the RFC: none.** The GUI uses our extens
+          +ions (`DEFEND`, `FLEE`, `EVT ROOM COMBAT`, `EVT ROOM ITEM`) wh
+          +en the server has them, and works without them.               
+       85  
+       77 -**Until A is done:** I build the page against fake data (step 
+          -1), then against a WebSocket echo of canned lines from the bro
+          -wser console. Nothing in the repo waits for A.                
+       86 +---                                                           
+       87  
+       88 +## 4. Decisions                                               
+       89 +                                                              
+       90 +| Topic | Decision | Why |                                    
+       91 +|---|---|---|                                                 
+       92 +| Toolkit | Plain HTML/CSS/JS in the browser, served by A's Go
+          + bridge | The subject allows web-based GUIs; nothing to instal
+          +l |                                                           
+       93 +| Bridge | Role A writes it, using WebSocket | File ownership 
+          +in `plan.md` |                                                
+       94 +| Art | 11 rooms, 9 NPCs, 8 items, 1 player, 3 fallbacks = **3
+          +2 PNGs** | Team choice; the fallbacks cover other groups' IDs 
+          +|                                                             
+       95 +| Fonts | **Jacquard 12** for titles, **VT323** for everything
+          + else; files stored in the repo | Full look with two licenses 
+          +|                                                             
+       96 +| Room refresh | After my own actions, after room events, and 
+          +a silent `LOOK` every 5 seconds | Other servers don't send ite
+          +m events |                                                    
+       97 +| Map | Exit buttons on every server; a drawn map of our 11 ro
+          +oms only when the room ID is ours | Works anywhere, looks good
+          + at home |                                                    
+       98 +| Server address | The bridge's `-server` flag | Keeps the bri
+          +dge simple |                                                  
+       99 +| Raw input | A box in the Raw TAP tab that sends any line | E
+          +valuators and other servers' extra commands |                 
+      100 +| Own chat | Show my message when `OK` arrives; ignore chat ev
+          +ents from my own name | Works whether or not a server echoes c
+          +hat to the sender |                                           
+      101 +                                                              
+      102 +**Cut to keep it simple** (each is easy to add later if wanted
+          +):                                                            
+      103 +                                                              
+      104 +- No enemy HP bar. Enemy HP is shown as text (`Rotting Sentry 
+          +· 15 HP`) from the `ATTACK` reply.                            
+      105 +- No group member list. No RFC command lists members, so it wo
+          +uld be guesswork. Joins and leaves appear in the log and the G
+          +roup chat tab.                                                
+      106 +- No pop-up toasts. Invites appear inside the Group panel.    
+      107 +- No hand-written display-name table. Labels come from IDs.   
+      108 +- No death detection. The server's replies already show HP and
+          + position.                                                    
+      109 +                                                              
+      110  ---
+      111  
+       81 -## 4. Contract with Role B (world and IDs)                    
+      112 +## 5. Agreements needed from A and B                          
+      113  
+       83 -Art file names and the map use room, NPC and item IDs, so I ne
+          -ed B to **freeze IDs on Day 1**. My proposal, based on `plan.m
+          -d` section 7:                                                 
+      114 +Settle these on Day 1. They're the only places my code touches
+          + theirs.                                                      
+      115  
+      116 +**With A: bridge contract**                                   
+      117 +                                                              
+      118 +| Item | Value |                                              
+      119 +|---|---|                                                     
+      120 +| Page | `http://127.0.0.1:8080/` serves `index.html` and the 
+          +`web/` folder, with correct types for PNG and TTF |           
+      121 +| WebSocket | `ws://<same host>/ws`; one TCP connection to `-s
+          +erver` per WebSocket |                                        
+      122 +| Server → page | One WS text message per protocol line, with 
+          +`\n`/`\r` removed |                                           
+      123 +| Page → server | One WS text message per command, without `\n
+          +`; the bridge adds it |                                       
+      124 +| Closing | If TCP closes, the bridge closes the WS, and the o
+          +ther way round. A failed TCP connect closes the WS straight aw
+          +ay |                                                          
+      125 +| Flags | `-port 8080 -server 127.0.0.1:4242` |               
+      126 +| **Timing** | **A writes the bridge first** (it's about 100 l
+          +ines), because steps 4-13 need it to test |                   
+      127 +                                                              
+      128 +**With B: frozen IDs** (art filenames and the map depend on th
+          +em)                                                           
+      129 +                                                              
+      130  | Rooms | NPCs | Items |
+      131  |---|---|---|
+       87 -| `loc.votive_chapel` | `npc.sister_ilvane` | `item.pilgrims_c
+          -andle` |                                                      
+       88 -| `loc.pilgrims_road` | `npc.old_corvin` | `item.rusted_censer
+          -` |                                                           
+       89 -| `loc.silent_market` | `npc.mute_merchant` | `item.funeral_br
+          -ead` |                                                        
+       90 -| `loc.hanged_garden` | `npc.zaza` | `item.burial_shroud` |   
+       91 -| `loc.burned_library` | `npc.rotting_sentry` | `item.heralds_
+          -scroll` |                                                     
+       92 -| `loc.throne_ruin` | `npc.grave_hound` | `item.sealed_altar` 
+          -|                                                             
+       93 -| `loc.bell_tower` | `npc.fallen_knight` | `item.vergers_hamme
+          -r` |                                                          
+       94 -| `loc.ossuary` | `npc.bell_warden` | `item.unspoken_question`
+          - |                                                            
+       95 -| `loc.crypt_gate` | `npc.baal` | |                           
+       96 -| `loc.sunken_stair` | | |                                    
+       97 -| `loc.hall_of_answer` | | |                                  
+      132 +| `loc.votive_chapel`, `loc.pilgrims_road`, `loc.silent_market
+          +`, `loc.hanged_garden`, `loc.burned_library`, `loc.throne_ruin
+          +`, `loc.bell_tower`, `loc.ossuary`, `loc.crypt_gate`, `loc.sun
+          +ken_stair`, `loc.hall_of_answer` | `npc.sister_ilvane`, `npc.o
+          +ld_corvin`, `npc.mute_merchant`, `npc.zaza`, `npc.rotting_sent
+          +ry`, `npc.grave_hound`, `npc.fallen_knight`, `npc.bell_warden`
+          +, `npc.baal` | `item.pilgrims_candle`, `item.rusted_censer`, `
+          +item.funeral_bread`, `item.burial_shroud`, `item.heralds_scrol
+          +l`, `item.sealed_altar`, `item.vergers_hammer`, `item.unspoken
+          +_question` |                                                  
+      133  
+       99 -I also need B's exact reply formats for `DEFEND`, `FLEE` and `
+          -QUEST`/`QUESTS` (fields and status values). The GUI only reads
+          - fields the RFC shows, and anything extra is displayed as text
+          -.                                                             
+      134 +Also from B: the exact JSON of the `DEFEND`, `FLEE`, `QUEST` a
+          +nd `QUESTS` replies.                                          
+      135  
+      136  ---
+      137  
+      103 -## 5. Files                                                   
+      138 +## 6. Files                                                   
+      139  
+      140  ```
+      141 +Makefile                                                      
+      142  internal/gui/web/
+      107 -├── index.html          # Static layout, no inline scripts    
+      108 -├── style.css           # Palette tokens, pixel components, la
+          -yout grid                                                     
+      109 -├── app.js              # All logic, one file (~500 lines), //
+          - @ts-check                                                    
+      143 +├── index.html                                                
+      144 +├── style.css                                                 
+      145 +├── app.js                                                    
+      146  └── assets/
+      111 -    ├── fonts/                                                
+      112 -    │   ├── Jacquard12-Regular.ttf                            
+      113 -    │   ├── VT323-Regular.ttf                                 
+      114 -    │   └── OFL.txt     # Both fonts' license (verify when dow
+          -nloading)                                                     
+      115 -    ├── rooms/          # <room-id>.png + _default.png        
+      116 -    ├── npcs/           # <npc-id>.png  + _default.png        
+      117 -    ├── items/          # <item-id>.png + _default.png        
+      147 +    ├── fonts/   Jacquard12-Regular.ttf, VT323-Regular.ttf, OF
+          +L.txt                                                         
+      148 +    ├── rooms/   <room-id>.png, _default.png                  
+      149 +    ├── npcs/    <npc-id>.png,  _default.png                  
+      150 +    ├── items/   <item-id>.png, _default.png                  
+      151      └── player.png
+      152  ```
+      153  
+      121 -`app.js` is one file on purpose: one place to read, and easy t
+          -o change live at evaluation.                                  
+      122 -                                                              
+      154  ---
+      155  
+      125 -## 6. Layout                                                  
+      156 +## 7. Implementation steps                                    
+      157  
+      127 -Based on the [mockup](https://claude.ai/artifact/RqLcMRGdv1nH2
+          -nfQcXeJ5j).                                                   
+      158 +Each step is small, can be tested on its own, and ends with a 
+          +commit. Steps 1-3 need no server. Steps 4-13 need A's bridge a
+          +nd the Day 1 stub server.                                     
+      159  
+      160 +### Step 1: Makefile                                          
+      161 +                                                              
+      162 +**What:** the targets the subject requires (`install`, `run-se
+          +rver`, `run-client`, `run-client-gui`, `lint`, `clean`), plus 
+          +`build` and `test`.                                           
+      163 +                                                              
+      164 +```make                                                       
+      165 +PORT    ?= 4242                                               
+      166 +GUIPORT ?= 8080                                               
+      167 +SERVER  ?= 127.0.0.1:$(PORT)                                  
+      168 +                                                              
+      169 +install:        ; go mod download && go install github.com/gol
+          +angci/golangci-lint/cmd/golangci-lint@<pinned version>        
+      170 +build:          ; go build -o bin/ ./cmd/...                  
+      171 +run-server:     ; go run ./cmd/server -port $(PORT) -world dat
+          +a/world.yaml                                                  
+      172 +run-client:     ; go run ./cmd/cli -addr $(SERVER)            
+      173 +run-client-gui: ; go run ./cmd/gui -port $(GUIPORT) -server $(
+          +SERVER)                                                       
+      174 +lint:           ; golangci-lint run ./...                     
+      175 +test:           ; go test -race ./...                         
+      176 +clean:          ; rm -rf bin/                                 
+      177 +.PHONY: install build run-server run-client run-client-gui lin
+          +t test clean                                                  
+      178  ```
+      179 +                                                              
+      180 +**Why this way:** `go run` needs no build directory, and the v
+          +ariables let anyone point the GUI at another server: `make run
+          +-client-gui SERVER=10.0.0.5:4242`.                            
+      181 +                                                              
+      182 +**Done when:** `make -n <target>` prints the right command for
+          + every target. Flag names are confirmed with A.               
+      183 +                                                              
+      184 +### Step 2: Static layout (`index.html`)                      
+      185 +                                                              
+      186 +**What:** every panel from the [mockup](https://claude.ai/arti
+          +fact/RqLcMRGdv1nH2nfQcXeJ5j), with fake text, and an `id` on e
+          +ach element JS will fill.                                     
+      187 +                                                              
+      188 +```                                                           
+      189  +-------------------------------------------------------------
+           --------+
+      190  | THE LAST VIGIL      alice · healthy   [HP ███████░░ 80/100] 
+                    |
+      191  |                                       In room: 2   Online: 5
+                   |
+      192  +-------------------------------------------------------------
+           --------+
+      134 -| [Look][Status][Inventory][Quests][Who][Group][Defend][Flee][
+          -Quit]   |                                                     
+      193 +| [Look][Status][Inventory][Quests][Who][Defend][Flee][Quit]  
+          +        |                                                     
+      194  +-------------------------------------------+-----------------
+           --------+
+      136 -|  ROOM SCENE (image)                       | Items here      
+          -        |                                                     
+      137 -|  Votive Chapel                            |  [icon] Pilgrim'
+          -s Candle|                                                     
+      138 -|  "Candles burn without wax..."            |         [Take]  
+          -        |                                                     
+      139 -|                                           | Players here    
+          -        |                                                     
+      140 -|  STORY PANEL                              |  [sprite] bob  [
+          -Invite] |                                                     
+      141 -|  Sister Ilvane: "The flame holds you..."  | Figures here    
+          -        |                                                     
+      142 -|                                           |  [sprite] Sister
+          - Ilvane |                                                     
+      195 +|  ROOM SCENE (image)                       | Items here   [Ta
+          +ke]     |                                                     
+      196 +|  Room name + description                  | Players here [In
+          +vite]   |                                                     
+      197 +|  STORY PANEL (NPC dialogue, quest text)   | Figures here    
+          +        |                                                     
+      198  |                                           |  [Talk][Quest][A
+           ttack]  |
+      144 -|                                           |  enemy HP bar (i
+          -f hit)  |                                                     
+      145 -+-------------------------------------------+-----------------
+          ---------+                                                     
+      146 -| Exits & map                | Inventory        | Quests  | Gr
+          -oup      |                                                    
+      147 -|  [N] [E] [Down]            |  [icon] Hammer   |  list   | me
+          -mbers    |                                                    
+      148 -|  pixel map, current lit    |        [Drop]    |         | [C
+          -reate]   |                                                    
+      149 -|                            |                  |         | [L
+          -eave]    |                                                    
+      150 -+----------------------------+------------------+---------+---
+          ----------+                                                    
+      151 -| CHAT  (Global*) (Room) (Group)     | LOG  (Game log) (Raw TA
+          -P)       |                                                    
+      152 -|  messages...                       |  lines...              
+          -         |                                                    
+      153 -|  [ text...            ] [Send]     |  [raw command...] [Send
+          -] (Raw)  |                                                    
+      154 -+------------------------------------+------------------------
+          ----------+                                                    
+      199 ++----------------------------+--------------+--------+--------
+          +--------+                                                     
+      200 +| Exits & map                | Inventory [Drop]      | Quests 
+          +| Group  |                                                    
+      201 ++----------------------------+-----------------------+--------
+          ++--------+                                                    
+      202 +| CHAT (Global)(Room)(Group) + input     | LOG (Game log)(Raw 
+          +TAP)     |                                                    
+      203 ++----------------------------------------+--------------------
+          +---------+                                                    
+      204  ```
+      205  
+      157 -**Other screens**                                             
+      206 +There are three `<section>`s: `#login`, `#game` and `#closed`.
+          + Only one is visible at a time, using the `hidden` attribute. 
+      207  
+      159 -- **Login:** game title, name input and a Connect button. Show
+          -s the server's error (`ERR 201 NAME_IN_USE`, `ERR 400`, `ERR 9
+          -00`) under the input.                                         
+      160 -- **Disconnected ("The candle gutters"):** shows the last line
+          - (such as `OK bye`) and a "Connect again" button that opens a 
+          -new WebSocket.                                                
+      208 +**Why this way:** with a fixed skeleton and IDs, JS never buil
+          +ds the page structure. It only fills lists. That's what keeps 
+          +`app.js` short.                                               
+      209  
+      162 -Chat and log are separate panels, as the subject requires. A `
+          -*` on a chat tab means unread messages.                       
+      210 +**Done when:** opening the file directly in a browser shows ev
+          +ery panel the subject lists.                                  
+      211  
+      164 ----                                                           
+      212 +### Step 3: Look and feel (`style.css`)                       
+      213  
+      166 -## 7. How app.js works                                        
+      214 +**What, in this order in the file:**                          
+      215  
+      168 -### State                                                     
+      216 +1. `@font-face` for the two local fonts.                      
+      217 +2. Palette as CSS variables in `:root`: near-black background,
+          + bone-white text, candle-amber accent and HP bar, blood-red fo
+          +r errors and damage, moss-green for "healthy".                
+      218 +3. Layout: one CSS grid for `#game`, with named areas matching
+          + the sketch.                                                  
+      219 +4. Components: `.panel` (pixel border with `box-shadow` steps)
+          +, `.btn` (pressed look on `:active`), `.bar` (HP), `.tabs`, `.
+          +list`.                                                        
+      220 +5. `image-rendering: pixelated` on every image.               
+      221  
+      170 -One object, re-rendered after each change:                    
+      222 +**Why this way:** variables mean one place to change colors. A
+          + handful of reusable classes means the HTML stays short and co
+          +nsistent.                                                     
+      223  
+      224 +**Done when:** the static page looks like the finished game, u
+          +sing fake data and placeholder images.                        
+      225 +                                                              
+      226 +### Step 4: Connect and show raw lines                        
+      227 +                                                              
+      228 +**What:** open the WebSocket, and print every line in and out 
+          +to the Raw TAP tab.                                           
+      229 +                                                              
+      230  ```js
+      173 -/** @typedef {{id:string,name:string,description:string,exits:
+          -Object<string,string>}} Room */                               
+      174 -const state = {                                               
+      175 -  me: "",            // my name                               
+      176 -  room: null,        // Room from the last LOOK               
+      177 -  players: [], items: [], npcs: [],                           
+      178 -  inventory: [],     // item IDs                              
+      179 -  hp: 100, maxHp: 100, status: "healthy",                     
+      180 -  online: 0,         // from WHO / EVT STATS                  
+      181 -  group: null,       // group id or null                      
+      182 -  groupMembers: [],  // built from GROUP JOIN/LEAVE events    
+      183 -  quests: [],        // from QUESTS                           
+      184 -  enemyHp: {},       // npc id -> last known HP               
+      185 -  pendingInvite: null,                                        
+      186 -};                                                            
+      231 +const ws = new WebSocket(`ws://${location.host}/ws`);         
+      232 +ws.onmessage = (e) => onLine(e.data);                         
+      233 +ws.onclose   = () => showScreen("closed");                    
+      234  ```
+      235  
+      189 -### Line handling                                             
+      236 +**Why:** from this point, every later step can be checked in t
+          +he Raw tab.                                                   
+      237  
+      191 -Each WebSocket message is one line:                           
+      238 +**Done when:** `OK hello proto=1` appears in the Raw tab again
+          +st the stub server.                                           
+      239  
+      193 -1. **Starts with `EVT `** → event handler (see table below). U
+          -nknown events go to the log and change nothing.               
+      194 -2. **Anything else** → the reply to the **oldest pending comma
+          -nd**.                                                         
+      240 +### Step 5: Login and disconnected screens                    
+      241  
+      196 -### The pending queue                                         
+      242 +**What:**                                                     
+      243  
+      198 -Replies have no request ID, but the server answers in order. S
+          -o:                                                            
+      244 +- Login: a name field and a Connect button that send `CONNECT 
+          +<name>`. On `OK connected`, show `#game`. On `ERR`, show the e
+          +rror text under the field (`NAME_IN_USE`, our `400`, `900` ser
+          +ver full).                                                    
+      245 +- Disconnected: on `OK bye` or WebSocket close, show `#closed`
+          + with the last line received, and a "Connect again" button tha
+          +t runs `location.reload()`.                                   
+      246  
+      247 +**Why `reload()`:** reloading resets all state for free, with 
+          +no reset code to get wrong.                                   
+      248 +                                                              
+      249 +**Done when:** login, duplicate-name error, QUIT and killing t
+          +he server all show the right screen.                          
+      250 +                                                              
+      251 +### Step 6: Pending queue and `send()`                        
+      252 +                                                              
+      253 +**What:** the core of the client. Every outgoing line goes thr
+          +ough one function:                                            
+      254 +                                                              
+      255  ```js
+      201 -// each entry: { cmd: "LOOK", args: "", silent: true }        
+      202 -send(cmd, args, silent) -> push to queue, ws.send(line)       
+      203 -on reply line            -> entry = queue.shift(); handlers[en
+          -try.cmd](line, entry)                                         
+      256 +const pending = [{ cmd: "GREETING", silent: true }];          
+      257 +                                                              
+      258 +function send(line, silent = false) {                         
+      259 +  pending.push({ cmd: line.split(" ")[0].toUpperCase(), silent
+          + });                                                          
+      260 +  ws.send(line);                                              
+      261 +  logRaw("> " + line);                                        
+      262 +}                                                             
+      263 +                                                              
+      264 +function onLine(line) {                                       
+      265 +  logRaw("< " + line);                                        
+      266 +  if (line.startsWith("EVT ")) return handleEvent(line);      
+      267 +  const req = pending.shift();               // replies have n
+          +o ID: match in order (RFC 4.3)                                
+      268 +  if (line.startsWith("ERR")) return logGame(line);           
+      269 +  (replyHandlers[req.cmd] || logGame)(line.slice(3), req);  //
+          + text after "OK "                                             
+      270 +}                                                             
+      271  ```
+      272  
+      206 -- When the page connects, a `GREETING` entry goes in first, so
+          - `OK hello proto=1` is matched to it.                         
+      207 -- `silent` entries (automatic `LOOK`, `STATUS`, `INVENTORY`, `
+          -WHO`) are left out of the game log, but always shown in the Ra
+          -w TAP tab.                                                    
+      208 -- A silent `LOOK` isn't queued if one is already pending, so p
+          -olling never piles up.                                        
+      209 -- `ERR` replies go to the game log (even for silent commands) 
+          -and never crash a handler.                                    
+      210 -- `ERR 9xx` → show the error; the server usually closes, which
+          - shows the disconnected screen.                               
+      273 +- `silent` replies stay out of the game log but always appear 
+          +in the Raw tab.                                               
+      274 +- The raw input box just calls `send(text)`. Typing `look` upd
+          +ates the room like the button does, because the reply handler 
+          +is chosen from the first word.                                
+      275  
+      212 -### Reply parsers (accepting both formats)                    
+      276 +**Why:** one entry point for sending and one for receiving mea
+          +ns the whole protocol flow fits on one screen.                
+      277  
+      214 -| Command | Reply handled | Then |                            
+      278 +**Done when:** typing `LOOK`, `WHO` and `BAD` in the raw box g
+          +ives the right replies in the right order.                    
+      279 +                                                              
+      280 +### Step 7: Reply handlers and room view                      
+      281 +                                                              
+      282 +**What:** one small function per reply, stored in `replyHandle
+          +rs`. Each one updates `state` and calls `render()`.           
+      283 +                                                              
+      284 +| Command | Reply | Handler does |                            
+      285  |---|---|---|
+      216 -| `CONNECT` | `OK connected` → game screen | Silent `LOOK`, `S
+          -TATUS`, `INVENTORY`, `WHO`, `QUESTS` |                        
+      217 -| `LOOK` | `OK {json}` | Render room, items, players, NPCs, ex
+          -its, map |                                                    
+      218 -| `MOVE` | `OK room=<id>` | Silent `LOOK` |                   
+      219 -| `TAKE` / `DROP` | `OK taken=<id>` / `OK dropped=<id>` | Sile
+          -nt `LOOK` + `INVENTORY` |                                     
+      220 -| `INVENTORY` | `OK [ids]` | Render inventory |               
+      221 -| `TALK` | `OK <text>` **or** `OK {"npc":..,"dialogue":..}` | 
+          -Show in story panel under the NPC's name |                    
+      222 -| `ATTACK` | `OK {"attacker_hp","target_hp","damage","status"}
+          -` | Update my HP and enemy HP bar; silent `LOOK` |            
+      223 -| `DEFEND` / `FLEE` | Our extension; JSON or `room=` | Silent 
+          -`STATUS` + `LOOK` |                                           
+      224 -| `STATUS` | `OK {"hp","max_hp","status"}` | Header HP bar and
+          - status |                                                     
+      225 -| `QUEST` | `OK {quest json}` | Show in story panel; silent `Q
+          -UESTS` + `INVENTORY` + `STATUS` |                             
+      226 -| `QUESTS` | `OK [ {...} ]` | Render quests panel |           
+      227 -| `WHO` | `OK players=N` **or** `OK {"room":[..],"server":N}` 
+          -| Online counter |                                            
+      228 -| `GROUP CREATE` / `JOIN` | `OK group=<id>` | Set group |     
+      229 -| `GROUP INVITE` / `LEAVE` | `OK` | Clear group on LEAVE |    
+      230 -| `CHAT` | `OK` | Add my message to that tab (local echo) |   
+      286 +| `CONNECT` | `OK connected` | Show game, then `refresh()` + s
+          +ilent `WHO` and `QUESTS` |                                    
+      287 +| `LOOK` | `OK {json}` | `state.room/players/items/npcs` |    
+      288 +| `MOVE`, `TAKE`, `DROP`, `FLEE` | `room=`, `taken=`, `dropped
+          +=` | `refresh()` |                                            
+      289 +| `ATTACK`, `DEFEND` | `{attacker_hp, target_hp, damage, statu
+          +s}` | Log the hit, set `state.hp` and the NPC's HP text, `refr
+          +esh()` |                                                      
+      290 +| `INVENTORY` | `[ids]` | `state.inventory` |                 
+      291 +| `STATUS` | `{hp, max_hp, status}` | Header HP bar |         
+      292 +| `TALK` | Text **or** `{npc, dialogue}` | Story panel |      
+      293 +| `QUEST` | `{quest_id, description, reward, status}` | Story 
+          +panel, then `refresh()` + silent `QUESTS` |                   
+      294 +| `QUESTS` | `[{quest_id, status, progress?}]` | Quests panel 
+          +|                                                             
+      295 +| `WHO` | `players=N` **or** `{server: N}` | Online counter | 
+      296 +| `GROUP` | `group=<id>` or `OK` | Group panel |              
+      297 +| `CHAT` | `OK` | My message in the current tab |             
+      298  | `QUIT` | `OK bye` | Disconnected screen |
+      232 -| Raw input | Anything | Shown in the log only |              
+      299  
+      234 -Raw input lines are parsed for their first word, so `look` typ
+          -ed by hand still updates the room view.                       
+      300 +```js                                                         
+      301 +// after anything that can change the room, inventory or HP   
+      302 +function refresh() { send("LOOK", true); send("INVENTORY", tru
+          +e); send("STATUS", true); }                                   
+      303 +```                                                           
+      304  
+      236 -### Event handlers                                            
+      305 +**Labels and images**, used everywhere:                       
+      306  
+      238 -| Event | Effect |                                            
+      239 -|---|---|                                                     
+      240 -| `EVT ROOM PRESENCE ENTER/LEAVE <user>` | Log line + silent `
+          -LOOK` |                                                       
+      241 -| `EVT ROOM CHAT <user> <text>` | Room tab (skipped if `<user>
+          -` is me) |                                                    
+      242 -| `EVT GLOBAL CHAT <user> <text>` | Global tab (skipped if me)
+          - |                                                            
+      243 -| `EVT GROUP CHAT <user> <text>` | Group tab (skipped if me) |
+      244 -| `EVT GROUP INVITE <user>` | Toast "`<user>` invites you" wit
+          -h [Join] → `GROUP JOIN <user>` |                              
+      245 -| `EVT GROUP JOIN/LEAVE <user>` | Update members list, log lin
+          -e |                                                           
+      246 -| `EVT STATS players=N` | Online counter |                    
+      247 -| `EVT ROOM COMBAT <user> <npc> {json}` | Log line, enemy HP b
+          -ar (our extension) |                                          
+      248 -| `EVT ROOM ITEM TAKE/DROP <user> <item>` | Log line + silent 
+          -`LOOK` (our extension) |                                      
+      249 -| Anything else | Log as-is, no crash |                       
+      307 +```js                                                         
+      308 +// "item.vergers_hammer" -> "Vergers Hammer" (works for any se
+          +rver's IDs)                                                   
+      309 +const label = (id) => id.replace(/^\w+\./, "").replace(/_/g, "
+          + ").replace(/\b\w/g, (c) => c.toUpperCase());                 
+      310  
+      251 -### Polling                                                   
+      311 +// our art if we have it, else the fallback                   
+      312 +function img(set, id) {                                       
+      313 +  const el = document.createElement("img");                   
+      314 +  el.src = /^[a-z0-9._-]+$/.test(id) ? `assets/${set}/${id}.pn
+          +g` : `assets/${set}/_default.png`;                            
+      315 +  el.onerror = () => { el.onerror = null; el.src = `assets/${s
+          +et}/_default.png`; };                                         
+      316 +  el.title = id;                             // shows the cano
+          +nical ID on hover                                             
+      317 +  return el;                                                  
+      318 +}                                                             
+      319 +```                                                           
+      320  
+      253 -A `setInterval` every 5 seconds sends a silent `LOOK` while co
+          -nnected. It is cleared on disconnect.                         
+      321 +**Why:** a lookup table of small handlers is easier to read an
+          +d extend than one large `if` chain. `refresh()` replaces a lis
+          +t of "what to re-fetch after what". `label()` covers the RFC's
+          + ID-or-display-name rule (8.3) on any server.                 
+      322  
+      255 -### Turning IDs into names                                    
+      323 +**Done when:** after LOOK, the room, items, players, NPCs and 
+          +exits all show correctly, including multi-word names.         
+      324  
+      257 -`label("item.vergers_hammer")` → `"Vergers Hammer"`: drop the 
+          -prefix, replace `_` with spaces, capitalize each word. A small
+          - optional table in `app.js` gives exact names for our own worl
+          -d (`"Verger's Hammer"`). Unknown IDs use the derived label. Bo
+          -th the label and the ID are shown (ID as a tooltip), which cov
+          -ers "handles both item IDs and display names".                
+      325 +### Step 8: Action buttons                                    
+      326  
+      259 -### Safety                                                    
+      327 +**What:** build buttons from state on each render. Every requi
+          +red command has a button:                                     
+      328  
+      261 -All server text goes into the page with `textContent` or `crea
+          -teElement`, **never** `innerHTML`. Image paths are built only 
+          -from IDs that match `^[a-z0-9._-]+$`; anything else uses the f
+          -allback image.                                                
+      329 +| Where | Buttons |                                           
+      330 +|---|---|                                                     
+      331 +| Command bar | `LOOK`, `STATUS`, `INVENTORY`, `QUESTS`, `WHO`
+          +, `DEFEND`, `FLEE`, `QUIT` |                                  
+      332 +| Each exit | `MOVE <direction>` |                            
+      333 +| Each room item | `TAKE <item-id>` |                         
+      334 +| Each inventory item | `DROP <item-id>` |                    
+      335 +| Each NPC | `TALK`, `QUEST`, `ATTACK <npc-id>` |             
+      336 +| Each player | `INVITE` (fills the Group panel's invite field
+          +) |                                                           
+      337 +| Group panel | `GROUP CREATE`, `INVITE`, `JOIN`, `LEAVE` |   
+      338  
+      263 ----                                                           
+      339 +The command bar is static HTML with `data-cmd="LOOK"`. One cli
+          +ck listener on the bar sends `btn.dataset.cmd`.               
+      340  
+      265 -## 8. Feature by feature                                      
+      341 +**Why:** one listener instead of eight, and adding a command b
+          +ar button is one line of HTML (a likely live change at evaluat
+          +ion).                                                         
+      342  
+      267 -Each required feature from subject V.4, and where it's handled
+          -:                                                             
+      343 +**Done when:** every command in RFC section 5 can be sent with
+          +out typing.                                                   
+      344  
+      269 -| Subject requirement | How |                                 
+      345 +### Step 9: Events, chat and counters                         
+      346 +                                                              
+      347 +**What:** one `handleEvent(line)` that splits the line and che
+          +cks the event type:                                           
+      348 +                                                              
+      349 +| Event | Effect |                                            
+      350  |---|---|
+      271 -| Room details, items, NPCs, exits, with real-time updates | `
+          -LOOK` render + events + 5s poll |                             
+      272 -| Inventory, with TAKE and DROP buttons | Take button on each 
+          -room item; Drop button on each inventory item |               
+      273 -| Handles item IDs and display names | Label + ID tooltip; raw
+          - input accepts names |                                        
+      274 -| Room view updates after TAKE/DROP | Silent `LOOK` after each
+          - |                                                            
+      275 -| Chat (Global, Room, Group) separate from the log | Chat pane
+          -l with 3 tabs; separate log panel |                           
+      276 -| Buttons for LOOK, MOVE, TAKE, DROP, TALK, ATTACK, STATUS, QU
+          -EST, QUESTS, WHO, GROUP, QUIT | Command bar + per-exit MOVE + 
+          -per-item TAKE/DROP + per-NPC TALK/QUEST/ATTACK + Group panel (
+          -CREATE, INVITE, JOIN, LEAVE) |                                
+      277 -| Counters for players in room and on server | `players.length
+          -` from `LOOK`; `WHO` and `EVT STATS` |                        
+      278 -| NPC interaction through TALK with dialogue | Story panel sho
+          -ws speaker sprite, name and line |                            
+      279 -| Stays responsive during events (global rules) | WebSocket ca
+          -llbacks only; no blocking calls |                             
+      351 +| `ROOM PRESENCE ENTER/LEAVE <user>` | Log line + silent `LOOK
+          +` |                                                           
+      352 +| `ROOM CHAT`, `GLOBAL CHAT`, `GROUP CHAT <user> <text>` | Add
+          + to that chat tab, unless `<user>` is me. Mark the tab unread 
+          +(`*`) if not open |                                           
+      353 +| `GROUP INVITE <leader>` | Show "`<leader>` invites you [Join
+          +]" in the Group panel |                                       
+      354 +| `GROUP JOIN/LEAVE <user>` | Log line |                      
+      355 +| `STATS players=N` | Online counter |                        
+      356 +| `ROOM COMBAT ...`, `ROOM ITEM ...` (ours) | Log line + silen
+          +t `LOOK` |                                                    
+      357 +| Anything else | Log it, nothing else |                      
+      358  
+      281 -**Extra controls:** Defend and Flee in the command bar (they m
+          -ay return `ERR` on other servers, which is just logged), the r
+          -aw command box, and the Invite button next to each player.    
+      359 +- **Chat input:** a scope selected by the active tab, `maxleng
+          +th="250"`, and Enter sends `CHAT <SCOPE> <text>`.             
+      360 +- **Counters:** "In room" = `state.players.length`; "Online" =
+          + the last `WHO` or `STATS` value.                             
+      361  
+      283 -**Group panel:** Create, Leave, an "Invite name" field (also f
+          -illed by the Invite button next to a player), and the members 
+          -list. No RFC command lists group members, so the list is built
+          - from `JOIN`/`LEAVE` events and may be incomplete if you join 
+          -a group that already has members. I note this in the README.  
+      362 +**Why:** chat goes in its own panel and game messages in the l
+          +og, as the subject requires. Skipping my own events and echoin
+          +g on `OK` makes chat work the same on servers that do and don'
+          +t echo.                                                       
+      363  
+      285 -**Enemy HP bar:** shown for an NPC after it's been attacked, f
+          -rom `target_hp`. Max HP isn't in the protocol, so the first va
+          -lue seen counts as full.                                      
+      364 +**Done when:** two browser tabs can chat in all three scopes, 
+          +and the counters change as tabs connect and disconnect.       
+      365  
+      287 -**Death:** the GUI notices when `LOOK` puts me in the safe roo
+          -m with lower HP, and shows "The candle drags you back" in the 
+          -story panel.                                                  
+      366 +### Step 10: Group panel                                      
+      367  
+      289 ----                                                           
+      368 +**What:** shows "No group" or "Group: `<id>`", with buttons Cr
+          +eate, Leave and Join (for an invite), plus a name field with a
+          +n Invite button. `state.group` is set from `OK group=<id>` and
+          + cleared on `GROUP LEAVE`'s `OK`.                             
+      369  
+      291 -## 9. Art and fonts                                           
+      370 +**Done when:** create, invite, join, group chat and leave all 
+          +work between two tabs, and the errors (`401`, `402`, our `407`
+          +) show in the log.                                            
+      371  
+      293 -### Images                                                    
+      372 +### Step 11: Polling                                          
+      373  
+      295 -| Set | Count | Size (drawn) | Shown at |                     
+      296 -|---|---|---|---|                                             
+      297 -| Room scenes | 11 + `_default` | 320×180 | 2-3× with `image-r
+          -endering: pixelated` |                                        
+      298 -| NPC sprites | 9 + `_default` | 64×64 | 2× |                 
+      299 -| Item icons | 8 + `_default` | 32×32 | 1-2× |                
+      300 -| Player | 1 | 64×64 | 2× |                                   
+      374 +**What:**                                                     
+      375  
+      302 -- **Naming:** `assets/<set>/<full-id>.png`, such as `assets/np
+          -cs/npc.zaza.png`.                                             
+      303 -- **Fallback:** each `<img>` has `onerror` → swap to `_default
+          -.png` once.                                                   
+      304 -- **Style prompt (same for all images):** "dark fantasy pixel 
+          -art, 16-color muted palette, candlelight, black background, no
+          - text". One fixed palette keeps the set consistent.           
+      305 -- **Tool:** to be chosen by me. The tool and which images it m
+          -ade go in the README's Resources section.                     
+      306 -- **Placeholders first:** during development every image is `_
+          -default.png`, so the art never blocks the code.               
+      376 +```js                                                         
+      377 +const POLL_MS = 5000;                                         
+      378 +setInterval(() => {                                           
+      379 +  if (!pending.some((p) => p.cmd === "LOOK")) send("LOOK", tru
+          +e);  // never pile up                                         
+      380 +}, POLL_MS);                                                  
+      381 +```                                                           
+      382  
+      308 -### Fonts                                                     
+      383 +Started after `OK connected`. Nothing needs to stop it, becaus
+          +e disconnecting reloads the page.                             
+      384  
+      310 -- **Jacquard 12:** game title and panel headings.             
+      311 -- **VT323:** body, buttons, chat and log.                     
+      312 -- Both are on Google Fonts under the SIL Open Font License (ch
+          -eck this when downloading). The `.ttf` files and `OFL.txt` go 
+          -in `assets/fonts/`, loaded with `@font-face`, never from a CDN
+          -.                                                             
+      385 +**Why:** on servers without our item events, this is the only 
+          +way to see another player's TAKE. It's a single `LOOK` at a ti
+          +me, well under our rate limit.                                
+      386  
+      314 -### Palette                                                   
+      387 +**Done when:** tab A takes an item, and tab B sees it disappea
+          +r within 5 seconds.                                           
+      388  
+      316 -Defined as CSS variables at the top of `style.css`: near-black
+          - background, bone-white text, candle-amber for highlights and 
+          -the HP bar, dried-blood red for damage and errors, and moss gr
+          -een for "healthy".                                            
+      389 +### Step 12: Map                                              
+      390  
+      318 ----                                                           
+      391 +**What:** a fixed table of grid positions for our 11 rooms, dr
+          +awn as a small CSS grid. The current room is highlighted. The 
+          +map is hidden when `state.room.id` isn't in the table. Exit bu
+          +ttons (step 8) are always shown.                              
+      392  
+      320 -## 10. Makefile                                               
+      393 +```js                                                         
+      394 +const MAP = { "loc.bell_tower": [2, 0], "loc.sunken_stair": [0
+          +, 1], /* ...11 entries */ };                                  
+      395 +```                                                           
+      396  
+      322 -The subject requires `install`, `run-server`, `run-client`, `r
+          -un-client-gui`, `lint` and `clean`. Defaults can be overridden
+          -: `make run-client-gui SERVER=10.0.0.5:4242`.                 
+      397 +**Why:** a plain table is 11 lines and easy to explain. Buildi
+          +ng the map automatically would be overengineering.            
+      398  
+      324 -```make                                                       
+      325 -PORT    ?= 4242                                               
+      326 -GUIPORT ?= 8080                                               
+      327 -SERVER  ?= 127.0.0.1:$(PORT)                                  
+      399 +**Done when:** walking the loop moves the highlight, and on an
+          + unknown room only the exit buttons show.                     
+      400  
+      329 -install:        go mod download && go install github.com/golan
+          -gci/golangci-lint/cmd/golangci-lint@<pinned>                  
+      330 -build:          go build -o bin/ ./cmd/...                    
+      331 -run-server:     go run ./cmd/server -port $(PORT) -world data/
+          -world.yaml                                                    
+      332 -run-client:     go run ./cmd/cli -addr $(SERVER)              
+      333 -run-client-gui: go run ./cmd/gui -port $(GUIPORT) -server $(SE
+          -RVER)                                                         
+      334 -lint:           golangci-lint run ./...                       
+      335 -test:           go test -race ./...                           
+      336 -clean:          rm -rf bin/                                   
+      337 -.PHONY: install build run-server run-client run-client-gui lin
+          -t test clean                                                  
+      338 -```                                                           
+      401 +### Step 13: Art and fonts                                    
+      402  
+      340 -Questions for A: flag names (`-port`, `-addr`, `-server`) and 
+          -default port 4242.                                            
+      403 +**What:**                                                     
+      404  
+      342 ----                                                           
+      405 +| Set | Count | Drawn size | Shown at |                       
+      406 +|---|---|---|---|                                             
+      407 +| Rooms | 11 + `_default` | 320×180 | 2-3× |                  
+      408 +| NPCs | 9 + `_default` | 64×64 | 2× |                        
+      409 +| Items | 8 + `_default` | 32×32 | 1-2× |                     
+      410 +| Player | 1 | 64×64 | 2× |                                   
+      411  
+      344 -## 11. Compliance and testing                                 
+      412 +- One prompt style for every image: *"dark fantasy pixel art, 
+          +muted 16-color palette, candlelight, black background, no text
+          +"*.                                                           
+      413 +- Filenames are the frozen IDs from section 5.                
+      414 +- Until the art is ready, every image uses `_default.png`, so 
+          +art never blocks code.                                        
+      415 +- Fonts come from Google Fonts' download page (both should be 
+          +SIL OFL; check when downloading), go in `assets/fonts/` with `
+          +OFL.txt`, and load through `@font-face`. No CDN.              
+      416  
+      346 -### How I run the checklist                                   
+      417 +**Done when:** no placeholder is left for our own IDs, and the
+          + AI tool and images are listed in the README's Resources secti
+          +on.                                                           
+      418  
+      348 -- I go through [plan.md section 10](plan.md#10-compliance-chec
+          -klist) before each merge to `main` on integration day, and tic
+          -k items in a copy kept in the PR description.                 
+      349 -- Server behavior is tested with `nc` and a few `printf` scrip
+          -ts, which also become the README's Testing section:           
+      419 +### Step 14: Compliance pass and README                       
+      420  
+      421 +See sections 8 and 9.                                         
+      422 +                                                              
+      423 +---                                                           
+      424 +                                                              
+      425 +## 8. Compliance and testing                                  
+      426 +                                                              
+      427 +**Server checks with `nc`** (also the README's Testing section
+          +):                                                            
+      428 +                                                              
+      429  ```sh
+      352 -# split packet:        (printf 'CONN'; sleep 1; printf 'ECT al
+          -ice\n'; sleep 1) | nc 127.0.0.1 4242                          
+      353 -# merged commands:     printf 'CONNECT bob\nLOOK\nWHO\n' | nc 
+          -127.0.0.1 4242                                                
+      354 -# CRLF:                printf 'CONNECT carl\r\nLOOK\r\n' | nc 
+          -127.0.0.1 4242                                                
+      355 -# too long:            head -c 2000 /dev/zero | tr '\0' a | nc
+          - 127.0.0.1 4242                                               
+      356 -# invalid UTF-8:       printf 'CONNECT \xff\xfe\n' | nc 127.0.
+          -0.1 4242                                                      
+      430 +(printf 'CONN'; sleep 1; printf 'ECT alice\n'; sleep 1) | nc 1
+          +27.0.0.1 4242   # split packet                                
+      431 +printf 'CONNECT bob\nLOOK\nWHO\n' | nc 127.0.0.1 4242         
+          +                 # merged commands                            
+      432 +printf 'CONNECT carl\r\nLOOK\r\n' | nc 127.0.0.1 4242         
+          +                 # CRLF                                       
+      433 +head -c 2000 /dev/zero | tr '\0' a | nc 127.0.0.1 4242        
+          +                 # too long                                   
+      434 +printf 'CONNECT \xff\xfe\n' | nc 127.0.0.1 4242               
+          +                 # invalid UTF-8                              
+      435  ```
+      436  
+      359 -- Bugs go to the file owner as a GitHub issue or message: the 
+          -failing step, expected line and actual line.                  
+      437 +I run the full [plan.md checklist](plan.md#10-compliance-check
+          +list) on integration day, and report each failure to the file'
+          +s owner with the expected line and the actual line.           
+      438  
+      361 -### GUI tests (manual, written down in the README)            
+      439 +**GUI tests (manual):**                                       
+      440  
+      363 -1. Two browser tabs (two players) in one room: chat in each sc
+          -ope, presence events and counters.                            
+      364 -2. Tab A takes an item, and tab B sees it disappear within 5 s
+          -econds.                                                       
+      365 -3. CLI player and GUI player in one room see each other.      
+      366 -4. Fight the Rotting Sentry from two tabs; die once to check r
+          -espawn.                                                       
+      367 -5. Run quest 1 and quest 2 to completion and check rewards in 
+          -Inventory, Status and Quests.                                 
+      368 -6. Group: create, invite, join from the toast, group chat, lea
+          -der leaves.                                                   
+      369 -7. Send `LOOK<script>alert(1)</script>` as chat and as a name,
+          - and check it shows as text.                                  
+      370 -8. Kill the server while the GUI is open → disconnected screen
+          -, then "Connect again" works.                                 
+      371 -9. If possible, point the bridge at another group's server and
+          - repeat tests 1-3.                                            
+      441 +1. Two tabs in one room: chat in all 3 scopes, presence events
+          +, both counters.                                              
+      442 +2. Tab A takes an item; tab B sees it disappear within 5 secon
+          +ds.                                                           
+      443 +3. A CLI player and a GUI player see each other.              
+      444 +4. Two tabs fight the Rotting Sentry; one dies and respawns.  
+      445 +5. Quests 1 and 2 from start to finish; rewards show in Invent
+          +ory, Status and Quests.                                       
+      446 +6. Group: create, invite, join, chat, leader leaves.          
+      447 +7. A name and chat line like `<b>x</b>` show as plain text.   
+      448 +8. Kill the server → disconnected screen → "Connect again" wor
+          +ks.                                                           
+      449 +9. If possible, run `make run-client-gui SERVER=<other group>`
+          + and repeat tests 1-3.                                        
+      450  
+      451  ---
+      452  
+      375 -## 12. README sections I own                                  
+      453 +## 9. README sections I own                                   
+      454  
+      455  | Section | Content |
+      456  |---|---|
+      379 -| Description | What TAP is, what we built, screenshot of the 
+          -GUI |                                                         
+      380 -| Instructions | Requirements (Go version), `make install`, ru
+          -n order |                                                     
+      381 -| Building and Running | Every Makefile target, flags, Windows
+          - commands without `make` |                                    
+      382 -| Testing | The `nc` scripts and GUI tests above, how to run `
+          -make test` |                                                  
+      383 -| Protocol Implementation | `plan.md` section 5 tidied up, plu
+          -s GUI notes: reply matching by queue, both WHO/TALK formats ac
+          -cepted, IDs sent for TAKE/DROP, chat local echo, polling |    
+      384 -| GUI notes | States that the GUI is web-based (HTML/CSS/JS in
+          - the browser, served by a Go bridge), and lists fonts and AI a
+          -rt |                                                          
+      385 -| Assembling | First italic line, merging A's and B's sections
+          -, one consistent style |                                      
+      457 +| Description | What TAP is, what we built, a GUI screenshot |
+      458 +| Instructions | Requirements (Go version), `make install`, st
+          +art order |                                                   
+      459 +| Building and Running | Every target, the variables, and Wind
+          +ows commands without `make` |                                 
+      460 +| Testing | Section 8 of this file, plus `make test` |        
+      461 +| Protocol Implementation | `plan.md` section 5, plus the GUI 
+          +rules in section 3 of this file |                             
+      462 +| Resources | Fonts, AI art tool and which images it made |   
+      463 +| Assembling | First italic line, merging A's and B's sections
+          + |                                                            
+      464  
+      387 ----                                                           
+      465 +The README also states that the GUI is web-based: HTML/CSS/JS 
+          +in the browser, served by a Go bridge.                        
+      466  
+      389 -## 13. Steps and timeline                                     
+      390 -                                                              
+      391 -Matches the phases in `plan.md`.                              
+      392 -                                                              
+      393 -| When | Step | Done when |                                   
+      394 -|---|---|---|                                                 
+      395 -| Day 1 | Agree on sections 3 and 4 with A and B; write the Ma
+          -kefile | IDs and bridge contract frozen |                     
+      396 -| Day 2 | Static layout in `index.html` + `style.css` with fak
+          -e data and placeholder images | Every panel visible in the bro
+          -wser |                                                        
+      397 -| Day 2 | `app.js`: WebSocket, raw log tab, raw input | Raw li
+          -nes from the stub server appear |                             
+      398 -| Day 3 | Pending queue, reply parsers, event handlers, render
+          -ing | Playable against the stub server |                      
+      399 -| Day 3 | All buttons, chat tabs, group panel, login and disco
+          -nnected screens | Every V.4 bullet works |                    
+      400 -| Day 4 | Generate and add the 32 images, fonts, map | No plac
+          -eholder left for our own IDs |                                
+      401 -| Day 5 | Integration: full checklist against the real server,
+          - bug reports | Checklist green |                              
+      402 -| Day 6 | README assembled; walk A and B through `app.js` | Ea
+          -ch member can explain the GUI |                               
+      403 -                                                              
+      467  ---
+      468  
+      406 -## 14. Evaluation prep                                        
+      469 +## 10. Evaluation prep                                        
+      470  
+      408 -I must be able to answer, without notes:                      
+      471 +Questions I must answer without notes:                        
+      472  
+      410 -- **How does the GUI know which command a reply belongs to?** 
+          -The FIFO pending queue.                                       
+      411 -- **Why does the room update when someone else takes an item?*
+          -* Our item events, or the 5-second poll on other servers.     
+      412 -- **Why can't another player's chat inject HTML?** `textConten
+          -t` only.                                                      
+      473 +- **How does the GUI match a reply to its command?** With the 
+          +FIFO pending queue (step 6).                                  
+      474  - **Why is there a Go bridge?** Browsers can't open raw TCP so
+           ckets.
+      414 -- **How does the GUI cope with another group's server?** Unkno
+          -wn events ignored, both reply formats accepted, fallback image
+          -s, ID-derived labels, map hidden for unknown rooms.           
+      475 +- **How does the room update when someone else takes an item?*
+          +* Our item events, or the 5-second poll on other servers.     
+      476 +- **Why can't chat inject HTML?** All server text is inserted 
+          +with `textContent`.                                           
+      477 +- **How does it work with another group's server?** Unknown ev
+          +ents are ignored, both WHO/TALK formats are accepted, labels c
+          +ome from IDs, images and the map have fallbacks.              
+      478  
+      479  Live changes I should be able to make in a few minutes:
+      480  
+      418 -- Add a button for a new command (one line in HTML, one handle
+          -r entry).                                                     
+      419 -- Change the polling interval (one constant).                 
+      420 -- Handle a new event type (one entry in the event table).     
+      421 -- Show a new field from `STATUS` in the header.               
+      422 -                                                              
+      423 ----                                                           
+      424 -                                                              
+      425 -## 15. Open questions for the team                            
+      426 -                                                              
+      427 -| # | Question | For |                                        
+      428 -|---|---|---|                                                 
+      429 -| 1 | Confirm the bridge contract in section 3 | A |          
+      430 -| 2 | Freeze the IDs in section 4 | B |                       
+      431 -| 3 | Exact JSON of `DEFEND`, `FLEE`, `QUEST`, `QUESTS` replie
+          -s | B |                                                       
+      432 -| 4 | Flag names and default ports for the server, CLI and bri
+          -dge | A |                                                     
+      433 -| 5 | Does our server echo `CHAT` back to the sender? (The GUI
+          - works either way, but the README should say.) | A |          
+      434 -| 6 | Who checks that the bridge serves the `assets/` folder w
+          -ith correct MIME types (PNG, TTF)? | A |                      
+      481 +| Change | Where |                                            
+      482 +|---|---|                                                     
+      483 +| New command button | One `data-cmd` button in `index.html` |
+      484 +| New reply format | One entry in `replyHandlers` |           
+      485 +| New event | One case in `handleEvent` |                     
+      486 +| Poll speed | `POLL_MS` |                                    
+      487 +| New field in the header | One line in `renderHeader` |      
+
+● I rewrote /home/ddergham/TAP/plan-role-c.md along your notes. I'd already read
+  the RFC (it's the file inside rfc.tar.gz), so nothing in the plan conflicted
+  with it. Section 3 now spells out every RFC rule that applies to a client and
+  which step covers it. The GUI has no deviations from the RFC: it uses our
+  extra commands and events when a server has them and works without them.
+
+  What changed:
+  - Section 2, rules for the code: three files with three jobs, no framework or
+    classes, one state object, small named functions, constants at the top, and
+    textContent only.
+  - Section 7, 14 small steps: each says what to build, why it's done that way,
+    and how to check it's done, with short code sketches. Steps 1–3 (Makefile,
+    layout, CSS) need no server.
+  - Size target: about 120 lines of HTML, 250 of CSS and 400 of JS. Going far
+    past that would mean something is overengineered.
+  - Chat input capped at 250 characters, so a line can never pass the RFC's
+    1024-byte limit.
+
+  I cut these to keep it simple, so push back if you want any of them:
+  - Enemy HP bar: replaced by plain text like Rotting Sentry · 15 HP.
+  - Group member list: no RFC command lists group members, so it would be
+    guesswork.
+  - Pop-up notifications: group invites show inside the Group panel instead.
+  - Hand-written table of display names: names are worked out from the IDs, so
+    item.vergers_hammer shows as "Vergers Hammer" (no apostrophe).
+  - Death detection: the server's replies already show your HP and where you
+    are.
+
+  One timing risk: Role A's own plan has them write the bridge last, but steps
+  4–13 can't be tested until it exists. The plan asks A to build the bridge
+  first; it's about 100 lines. Raise this on Day 1.
+
+✻ Cooked for 2m 10s · done Tuesday 10:51 PM
+
+※ recap: You're planning the web GUI (Role C) for your 42 TAP project, and your step-by-step plan is written in plan-role-c.md with no code yet. Next, review the cut features and agree on the bridge and room IDs with A and B. (disable recaps in /config)
+
+❯ and also follow the best git branches convention branch for every feature and
+  place it inside a file called best git convention about the gitops best
+  practices for each feature and evrything a commit a a seperate branch and the
+  merge should have -ff to have a better graph view write a simple and easy
+  guide to follow
+
+● Write(best-git-convention.md)
+  ⎿  Wrote 268 lines to best-git-convention.md
+       1 # Best Git Convention
+       2
+       3 How our team uses Git. It's short on purpose: read it once, then
+          use the [cheat sheet](#8-cheat-sheet).
+       4
+       5 **Contents**
+       6
+       7 1. [The five rules](#1-the-five-rules)
+       8 2. [One-time setup](#2-one-time-setup)
+       9 3. [Branch names](#3-branch-names)
+     … +259 lines (ctrl+o to expand)
+
+● Now I'll link it from your role plan.
+
+● Update(plan-role-c.md)
+  ⎿  Added 1 line, removed 1 line
+      155  
+      156  ## 7. Implementation steps
+      157  
+      158 -Each step is small, can be tested on its own, and ends with a 
+          -commit. Steps 1-3 need no server. Steps 4-13 need A's bridge a
+          -nd the Day 1 stub server.                                     
+      158 +Each step is small, can be tested on its own, and is **its own
+          + branch**, merged into `main` with `--no-ff`. Branch names and
+          + commit messages follow [best-git-convention.md](best-git-conv
+          +ention.md#9-branch-list). Steps 1-3 need no server. Steps 4-13
+          + need A's bridge and the Day 1 stub server.                   
+      159  
+      160  ### Step 1: Makefile
+      161  
+
+● I wrote the guide to /home/ddergham/TAP/best-git-convention.md and linked it
+  from step 7 of your plan.
+
+  One correction to your request: you wrote -ff, but to get the graph you want,
+  the merge has to be --no-ff.
+  - --ff (fast-forward): your feature's commits go straight onto main as one
+    flat line, and the branch disappears from the graph.
+  - --no-ff: Git always creates a merge commit, so each feature shows up as its
+    own loop in the graph. Section 7 of the guide has an example.
+
+  If you really did mean a flat history, tell me and I'll change it.
+
+  What's in the guide:
+  - Five rules: never commit on main, one branch per feature, small commits,
+    merge with --no-ff, delete the branch after merging.
+  - One-time setup: your Git name and email, a setting so git pull never creates
+    surprise merges, a .gitignore, and the GitHub setting that leaves only
+    "Allow merge commits" on.
+  - Naming: branches look like feat/gui-login or fix/take-race, and commits like
+    feat(gui): add login screen, with good and bad examples.
+  - An 8-step loop for every feature: start from main, create the branch,
+    commit, push, catch up with main, get a review, merge, delete.
+  - Help when stuck: what to do on a conflict, and a one-page cheat sheet with a
+    checklist to run before every merge.
+  - Branch list: your 14 plan steps, each with its branch name and example
+    commits.
+
+  One choice I made: before merging, you replay your branch on top of the latest
+  main (git rebase). That keeps the graph tidy, but it's only safe on a branch
+  nobody else is pushing to. The guide says this at the step itself.
+
+✻ Crunched for 1m 3s · done Tuesday 11:10 PM
+※ recap: We're planning your Role C part (the web GUI) of the 42 TAP project; your step-by-step plan and Git guide are written, with no code yet. Next, confirm I read your "-ff" right as `--no-ff`, then share both files with A and B to agree on. (disable recaps in /config)

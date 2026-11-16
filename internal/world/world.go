@@ -4,7 +4,12 @@
 // and are a starting point: change them as needed.
 package world
 
-import "errors"
+import (
+	"fmt"
+	"os"
+
+	"gopkg.in/yaml.v3"
+)
 
 // World is the whole content of the world file.
 type World struct {
@@ -73,8 +78,21 @@ type Reward struct {
 }
 
 // Load reads and validates the world file.
+// Cyclomatic Complexity: 4
 func Load(path string) (*World, error) {
-	// TODO(B): read the file, yaml.Unmarshal into World, then call Validate.
-	// Add the dependency with: go get gopkg.in/yaml.v3
-	return nil, errors.New("world.Load is not implemented yet (Role B)")
+	data, err := os.ReadFile(path)
+	if err != nil {
+		return nil, fmt.Errorf("reading world file: %w", err)
+	}
+
+	var w World
+	if err := yaml.Unmarshal(data, &w); err != nil {
+		return nil, fmt.Errorf("parsing world YAML: %w", err)
+	}
+
+	if err := w.Validate(); err != nil {
+		return nil, fmt.Errorf("validating world: %w", err)
+	}
+
+	return &w, nil
 }

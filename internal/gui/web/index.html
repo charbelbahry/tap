@@ -10,12 +10,12 @@
 </head>
 <body>
 
-  <section id="login" hidden>
+  <section class="panel" id="login" hidden>
     <h1>The Last Vigil</h1>
     <form id="login-form">
       <label for="login-name">Your name</label>
       <input id="login-name" autocomplete="off" required>
-      <button type="submit">Connect</button>
+      <button class="btn" type="submit">Connect</button>
     </form>
     <p id="login-error"></p>
   </section>
@@ -30,17 +30,17 @@
     </header>
 
     <nav id="commands">
-      <button data-cmd="LOOK">Look</button>
-      <button data-cmd="STATUS">Status</button>
-      <button data-cmd="INVENTORY">Inventory</button>
-      <button data-cmd="QUESTS">Quests</button>
-      <button data-cmd="WHO">Who</button>
-      <button data-cmd="DEFEND">Defend</button>
-      <button data-cmd="FLEE">Flee</button>
-      <button data-cmd="QUIT">Quit</button>
+      <button class="btn" data-cmd="LOOK">Look</button>
+      <button class="btn" data-cmd="STATUS">Status</button>
+      <button class="btn" data-cmd="INVENTORY">Inventory</button>
+      <button class="btn" data-cmd="QUESTS">Quests</button>
+      <button class="btn" data-cmd="WHO">Who</button>
+      <button class="btn" data-cmd="DEFEND">Defend</button>
+      <button class="btn" data-cmd="FLEE">Flee</button>
+      <button class="btn" data-cmd="QUIT">Quit</button>
     </nav>
 
-    <main id="room">
+    <main class="panel" id="room">
       <img id="room-img" alt="Room scene">
       <h2 id="room-name">Votive Chapel</h2>
       <p id="room-desc">Candles burn without wax beneath a roof that fell in long ago.</p>
@@ -50,74 +50,74 @@
       </div>
     </main>
 
-    <aside id="here">
+    <aside class="panel" id="here">
       <h2>Items here</h2>
-      <ul id="items"><li>Pilgrims Candle</li></ul>
+      <ul class="list" id="items"><li>Pilgrims Candle</li></ul>
       <h2>Players here</h2>
-      <ul id="players"><li>bob</li></ul>
+      <ul class="list" id="players"><li>bob</li></ul>
       <h2>Figures here</h2>
-      <ul id="npcs"><li>Sister Ilvane</li></ul>
+      <ul class="list" id="npcs"><li>Sister Ilvane</li></ul>
     </aside>
 
-    <section id="exits-panel">
+    <section class="panel" id="exits-panel">
       <h2>Exits and map</h2>
-      <div id="exits"><button>east</button></div>
+      <div id="exits"><button class="btn">east</button></div>
       <div id="map"></div>
     </section>
 
-    <section id="inventory-panel">
+    <section class="panel" id="inventory-panel">
       <h2>Inventory</h2>
-      <ul id="inventory"><li>Rusted Censer</li></ul>
+      <ul class="list" id="inventory"><li>Rusted Censer</li></ul>
     </section>
 
-    <section id="quests-panel">
+    <section class="panel" id="quests-panel">
       <h2>Quests</h2>
-      <ul id="quests"><li>The First Vigil · active</li></ul>
+      <ul class="list" id="quests"><li>The First Vigil · active</li></ul>
     </section>
 
-    <section id="group-panel">
+    <section class="panel" id="group-panel">
       <h2>Group</h2>
       <p id="group-status">No group</p>
-      <button id="group-create">Create</button>
-      <button id="group-leave">Leave</button>
+      <button class="btn" id="group-create">Create</button>
+      <button class="btn" id="group-leave">Leave</button>
       <div id="group-invite"></div>
       <form id="invite-form">
         <input id="invite-name" placeholder="Player name" autocomplete="off">
-        <button type="submit">Invite</button>
+        <button class="btn" type="submit">Invite</button>
       </form>
     </section>
 
-    <section id="chat">
+    <section class="panel" id="chat">
       <div class="tabs" id="chat-tabs">
-        <button data-scope="GLOBAL">Global</button>
-        <button data-scope="ROOM">Room</button>
-        <button data-scope="GROUP">Group</button>
+        <button class="btn" data-scope="GLOBAL">Global</button>
+        <button class="btn" data-scope="ROOM">Room</button>
+        <button class="btn" data-scope="GROUP">Group</button>
       </div>
-      <ul id="chat-log"><li>bob: is anyone else here?</li></ul>
+      <ul class="list" id="chat-log"><li>bob: is anyone else here?</li></ul>
       <form id="chat-form">
         <input id="chat-input" maxlength="250" placeholder="Say something" autocomplete="off">
-        <button type="submit">Send</button>
+        <button class="btn" type="submit">Send</button>
       </form>
     </section>
 
-    <section id="log">
+    <section class="panel" id="log">
       <div class="tabs" id="log-tabs">
-        <button data-log="game-log">Game log</button>
-        <button data-log="raw-log">Raw TAP</button>
+        <button class="btn" data-log="game-log">Game log</button>
+        <button class="btn" data-log="raw-log">Raw TAP</button>
       </div>
-      <ul id="game-log"><li>You enter the Votive Chapel.</li></ul>
-      <ul id="raw-log" hidden><li>&lt; OK hello proto=1</li></ul>
+      <ul class="list" id="game-log"><li>You enter the Votive Chapel.</li></ul>
+      <ul class="list" id="raw-log" hidden><li>&lt; OK hello proto=1</li></ul>
       <form id="raw-form">
         <input id="raw-input" placeholder="Any TAP command" autocomplete="off">
-        <button type="submit">Send</button>
+        <button class="btn" type="submit">Send</button>
       </form>
     </section>
   </section>
 
-  <section id="closed" hidden>
+  <section class="panel" id="closed" hidden>
     <h2>The candle gutters</h2>
     <p id="closed-reason">OK bye</p>
-    <button id="reconnect">Connect again</button>
+    <button class="btn" id="reconnect">Connect again</button>
   </section>
 
 </body>

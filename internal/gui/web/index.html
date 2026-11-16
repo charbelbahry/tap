@@ -1,16 +1,124 @@
 <!doctype html>
-<!-- Owner: Role C. Layout reference: the GUI mockup linked in PLAN.md. -->
+<!-- Owner: Role C. Structure only: style.css styles it, app.js fills the elements that have an id. -->
 <html lang="en">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>The Last Vigil</title>
   <link rel="stylesheet" href="style.css">
+  <script src="app.js" defer></script>
 </head>
 <body>
-  <h1>The Last Vigil</h1>
-  <p>GUI placeholder. Role C builds the real interface here.</p>
-  <pre id="log"></pre>
-  <script src="app.js"></script>
+
+  <section id="login" hidden>
+    <h1>The Last Vigil</h1>
+    <form id="login-form">
+      <label for="login-name">Your name</label>
+      <input id="login-name" autocomplete="off" required>
+      <button type="submit">Connect</button>
+    </form>
+    <p id="login-error"></p>
+  </section>
+
+  <section id="game">
+    <header>
+      <h1>The Last Vigil</h1>
+      <p id="me">alice · healthy</p>
+      <div class="bar"><div id="hp-fill"></div></div>
+      <p id="hp-text">100 / 100</p>
+      <p>In room: <span id="count-room">2</span> · Online: <span id="count-online">5</span></p>
+    </header>
+
+    <nav id="commands">
+      <button data-cmd="LOOK">Look</button>
+      <button data-cmd="STATUS">Status</button>
+      <button data-cmd="INVENTORY">Inventory</button>
+      <button data-cmd="QUESTS">Quests</button>
+      <button data-cmd="WHO">Who</button>
+      <button data-cmd="DEFEND">Defend</button>
+      <button data-cmd="FLEE">Flee</button>
+      <button data-cmd="QUIT">Quit</button>
+    </nav>
+
+    <main id="room">
+      <img id="room-img" alt="Room scene">
+      <h2 id="room-name">Votive Chapel</h2>
+      <p id="room-desc">Candles burn without wax beneath a roof that fell in long ago.</p>
+      <div id="story">
+        <h3>Sister Ilvane</h3>
+        <p>The flame holds you here, Vigilant. Speak with me when you are ready.</p>
+      </div>
+    </main>
+
+    <aside id="here">
+      <h2>Items here</h2>
+      <ul id="items"><li>Pilgrims Candle</li></ul>
+      <h2>Players here</h2>
+      <ul id="players"><li>bob</li></ul>
+      <h2>Figures here</h2>
+      <ul id="npcs"><li>Sister Ilvane</li></ul>
+    </aside>
+
+    <section id="exits-panel">
+      <h2>Exits and map</h2>
+      <div id="exits"><button>east</button></div>
+      <div id="map"></div>
+    </section>
+
+    <section id="inventory-panel">
+      <h2>Inventory</h2>
+      <ul id="inventory"><li>Rusted Censer</li></ul>
+    </section>
+
+    <section id="quests-panel">
+      <h2>Quests</h2>
+      <ul id="quests"><li>The First Vigil · active</li></ul>
+    </section>
+
+    <section id="group-panel">
+      <h2>Group</h2>
+      <p id="group-status">No group</p>
+      <button id="group-create">Create</button>
+      <button id="group-leave">Leave</button>
+      <div id="group-invite"></div>
+      <form id="invite-form">
+        <input id="invite-name" placeholder="Player name" autocomplete="off">
+        <button type="submit">Invite</button>
+      </form>
+    </section>
+
+    <section id="chat">
+      <div class="tabs" id="chat-tabs">
+        <button data-scope="GLOBAL">Global</button>
+        <button data-scope="ROOM">Room</button>
+        <button data-scope="GROUP">Group</button>
+      </div>
+      <ul id="chat-log"><li>bob: is anyone else here?</li></ul>
+      <form id="chat-form">
+        <input id="chat-input" maxlength="250" placeholder="Say something" autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+
+    <section id="log">
+      <div class="tabs" id="log-tabs">
+        <button data-log="game-log">Game log</button>
+        <button data-log="raw-log">Raw TAP</button>
+      </div>
+      <ul id="game-log"><li>You enter the Votive Chapel.</li></ul>
+      <ul id="raw-log" hidden><li>&lt; OK hello proto=1</li></ul>
+      <form id="raw-form">
+        <input id="raw-input" placeholder="Any TAP command" autocomplete="off">
+        <button type="submit">Send</button>
+      </form>
+    </section>
+  </section>
+
+  <section id="closed" hidden>
+    <h2>The candle gutters</h2>
+    <p id="closed-reason">OK bye</p>
+    <button id="reconnect">Connect again</button>
+  </section>
+
 </body>
 </html>

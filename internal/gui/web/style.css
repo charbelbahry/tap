@@ -1,8 +1,51 @@
-/* Owner: Role C. Pixel components go here. Fonts go in assets/. */
+/* Owner: Role C. Order: fonts, palette, base, layout, components. */
 
-body {
-  background: #0c0910;
-  color: #ddd3bb;
-  font-family: monospace;
-  padding: 16px;
+/* 1. Fonts: stored locally, licence in assets/fonts/OFL.txt */
+@font-face {
+  font-family: "Jacquard 12";
+  src: url("assets/fonts/Jacquard12-Regular.ttf") format("truetype");
 }
+@font-face {
+  font-family: "VT323";
+  src: url("assets/fonts/VT323-Regular.ttf") format("truetype");
+}
+
+/* 2. Palette: change colours here only */
+:root {
+  --bg: #0c0910;        /* near-black */
+  --panel: #17121c;
+  --edge: #3a2f42;
+  --text: #ddd3bb;      /* bone white */
+  --dim: #8c8273;
+  --amber: #e0a64a;     /* candle light: accents and HP */
+  --red: #b0342c;       /* blood: errors and damage */
+  --green: #6f8f4e;     /* moss: healthy */
+  --title: "Jacquard 12", serif;
+  --body: "VT323", monospace;
+}
+
+/* 3. Base */
+* { box-sizing: border-box; }
+[hidden] { display: none !important; } /* our display rules must not override hidden */
+body {
+  margin: 0;
+  padding: 16px;
+  background: var(--bg);
+  color: var(--text);
+  font: 20px/1.2 var(--body);
+}
+h1, h2, h3 { margin: 0 0 8px; font-weight: normal; }
+h1 { font: 48px/1 var(--title); color: var(--amber); }
+h2 { font: 28px/1 var(--title); color: var(--amber); }
+h3 { font-size: 22px; color: var(--amber); }
+p { margin: 0 0 8px; }
+img { image-rendering: pixelated; }
+input {
+  font: inherit;
+  color: var(--text);
+  background: var(--bg);
+  border: 2px solid var(--edge);
+  padding: 4px 8px;
+}
+input:focus { outline: 2px solid var(--amber); }
+

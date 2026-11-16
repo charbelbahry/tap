@@ -55,11 +55,11 @@ created: 2026-11-16
 
 Use this checklist to track your milestone execution as you build and test:
 
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 1 Static World Data Ingestion & Validation internalworld|Milestone 1: World Data Ingestion & Validation]]** (`internal/world`)
-  - [ ] Implement `world.Load(path)` using `gopkg.in/yaml.v3`
-  - [ ] Implement graph & reference validator in `Validate()`
-  - [ ] Write unit test suite `world_test.go`
-  - [ ] *Outcome: Unblocks server startup (`cmd/server/main.go`)*
+- [x] **[[03 - Role B Plan & Milestones#Milestone 1 Static World Data Ingestion & Validation internalworld|Milestone 1: World Data Ingestion & Validation]]** (`internal/world`)
+  - [x] Implement `world.Load(path)` using `gopkg.in/yaml.v3`
+  - [x] Implement graph & reference validator in `Validate()`
+  - [x] Write unit test suite `world_test.go`
+  - [x] *Outcome: Unblocked server startup (`cmd/server/main.go`)*
 - [ ] **[[03 - Role B Plan & Milestones#Milestone 2 Player Spawning Spatial Navigation & Presence internalgameroomgo|Milestone 2: Player Spawning & Navigation]]** (`internal/game/room.go`)
   - [ ] Initialize player state in `world.Map.Start` (100 HP)
   - [ ] Implement RFC-compliant JSON response for `LOOK`

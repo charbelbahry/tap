@@ -5,17 +5,48 @@
 package main
 
 import (
+	"bufio"
 	"flag"
 	"fmt"
+	"net"
 	"os"
+
+	"github.com/chzyer/readline"
 )
 
 func main() {
 	addr := flag.String("addr", "localhost:4242", "server address")
 	flag.Parse()
 
-	// TODO(A): dial addr, print server lines in a goroutine, send typed lines.
-	// Add the dependency with: go get github.com/chzyer/readline
-	fmt.Fprintf(os.Stderr, "cli: not implemented yet (would connect to %s)\n", *addr)
-	os.Exit(1)
+	conn, err := net.Dial("tcp", *addr)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "cannot connect:", err)
+		os.Exit(1)
+	}
+	defer conn.Close()
+
+	rl, err := readline.New("> ")
+	if err != nil {
+		fmt.Fprintln(os.Stderr, err)
+		os.Exit(1)
+	}
+	defer rl.Close()
+
+	// Print everything the server sends, while the user types.
+	go func() {
+		sc := bufio.NewScanner(conn)
+		for sc.Scan() {
+			fmt.Fprintln(rl.Stdout(), sc.Text())
+		}
+		fmt.Fprintln(rl.Stdout(), "connection closed")
+		rl.Close() // unblocks Readline below so the program exits
+	}()
+
+	for {
+		line, err := rl.Readline()
+		if err != nil { // Ctrl+D, Ctrl+C, or the server closed the connection
+			return
+		}
+		fmt.Fprintln(conn, line)
+	}
 }

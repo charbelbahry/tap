@@ -14,12 +14,17 @@ import (
 
 // startServer runs a server on a random port and returns its address.
 func startServer(t *testing.T) string {
+	return startServerLogged(t, slog.DiscardHandler)
+}
+
+// startServerLogged is startServer with a chosen log handler.
+func startServerLogged(t *testing.T, h slog.Handler) string {
 	t.Helper()
 	ln, err := net.Listen("tcp", "127.0.0.1:0")
 	if err != nil {
 		t.Fatal(err)
 	}
-	log := slog.New(slog.DiscardHandler)
+	log := slog.New(h)
 	go New(game.New(&world.World{}, log), log).Serve(ln)
 	t.Cleanup(func() { ln.Close() })
 	return ln.Addr().String()

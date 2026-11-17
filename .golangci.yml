@@ -1,0 +1,17 @@
+version: "2"
+
+linters:
+  settings:
+    errcheck:
+      # Errors from these calls cannot be handled in a useful way here.
+      exclude-functions:
+        - (net.Conn).SetReadDeadline
+        - (net.Conn).SetWriteDeadline
+        - (net.Conn).Write
+        - (*github.com/gorilla/websocket.Conn).SetReadDeadline
+        - (*github.com/gorilla/websocket.Conn).WriteMessage
+        - (*bufio.Reader).ReadByte
+        - (*github.com/charbelbahry/tap/internal/server.Server).Serve # tests run it in a goroutine
+  exclusions:
+    presets:
+      - std-error-handling # Close, Remove, Fprint* and similar

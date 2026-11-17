@@ -28,8 +28,7 @@ func main() {
 	}
 
 	s := server.New(game.New(w, log), log)
-	if err := s.Run(fmt.Sprintf(":%d", *port)); err != nil {
-		log.Error("server_stopped", "err", err)
-		os.Exit(1)
-	}
+	// Run only returns when listening or accepting fails.
+	log.Error("server_stopped", "err", s.Run(fmt.Sprintf(":%d", *port)))
+	os.Exit(1)
 }

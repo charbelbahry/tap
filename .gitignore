@@ -10,3 +10,4 @@ bin/
 .DS_Store
 
 ROLE_A_PLAN.md
+.go/

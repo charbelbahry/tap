@@ -1,6 +1,6 @@
 module github.com/charbelbahry/tap
 
-go 1.27
+go 1.24
 
 require (
 	github.com/chzyer/readline v1.5.1

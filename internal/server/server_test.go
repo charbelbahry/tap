@@ -25,7 +25,11 @@ func startServerLogged(t *testing.T, h slog.Handler) string {
 		t.Fatal(err)
 	}
 	log := slog.New(h)
-	go New(game.New(&world.World{}, log), log).Serve(ln)
+	w, err := world.Load("../../data/world.yaml")
+	if err != nil {
+		t.Fatal(err)
+	}
+	go New(game.New(w, log), log).Serve(ln)
 	t.Cleanup(func() { ln.Close() })
 	return ln.Addr().String()
 }
@@ -297,4 +301,33 @@ func TestGroupLeaderDisconnectPassesLeadership(t *testing.T) {
 	expect(t, c, rc, "EVT ROOM PRESENCE LEAVE alice")
 	expect(t, c, rc, "EVT STATS players=2")
 	expect(t, c, rc, "EVT GROUP INVITE bob")
+}
+
+// Every line gets exactly one reply, including blank ones. The GUI matches
+// replies to commands in order, so a silent line would shift every later reply.
+func TestBlankLinesGetAnError(t *testing.T) {
+	addr := startServer(t)
+	c, r := dial(t, addr)
+	send(t, c, "\n")
+	expect(t, c, r, "ERR 400 BAD_REQUEST") // before CONNECT
+	send(t, c, "CONNECT alice\n")
+	expect(t, c, r, "OK connected")
+	expect(t, c, r, "EVT STATS players=1")
+
+	send(t, c, "\n   \r\n\t\nWHO\n") // empty, spaces with CRLF, tab, then a real command
+	for range 3 {
+		expect(t, c, r, "ERR 400 BAD_REQUEST")
+	}
+	expect(t, c, r, "OK players=1")
+}
+
+// Blank lines count toward the flood limit like any other line.
+func TestBlankLineFloodIsRateLimited(t *testing.T) {
+	addr := startServer(t)
+	c, r := dial(t, addr)
+	send(t, c, strings.Repeat("\n", cmdLimit+1))
+	for range cmdLimit {
+		expect(t, c, r, "ERR 400 BAD_REQUEST")
+	}
+	expect(t, c, r, "ERR 429 RATE_LIMITED")
 }

@@ -34,7 +34,10 @@ type Player struct {
 	Group  *Group // Role A
 	Invite *Group // Role A: last group this player was invited to
 
-	// Role B adds HP, MaxHP, inventory, quest progress and so on.
+	// Role B
+	HP        int
+	MaxHP     int
+	Inventory []string
 }
 
 // Group members are kept in join order. Members[0] is the leader.
@@ -50,12 +53,26 @@ type Game struct {
 	players   map[string]*Player
 	nextGroup int
 
-	// Role B adds item locations, NPC state and so on.
+	// Role B
+	roomItems map[string][]string
 }
 
 // New creates a game from loaded world data.
 func New(w *world.World, log *slog.Logger) *Game {
-	return &Game{world: w, log: log, players: map[string]*Player{}}
+	g := &Game{
+		world:     w,
+		log:       log,
+		players:   map[string]*Player{},
+		roomItems: make(map[string][]string),
+	}
+	if w != nil {
+		for id, r := range w.Map.Rooms {
+			items := make([]string, len(r.Items))
+			copy(items, r.Items)
+			g.roomItems[id] = items
+		}
+	}
+	return g
 }
 
 // Handle runs one command for a connected player.

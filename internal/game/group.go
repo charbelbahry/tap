@@ -85,7 +85,7 @@ func (g *Game) groupMembersInRoom(p *Player) []*Player {
 	}
 	var out []*Player
 	for _, name := range p.Group.Members {
-		if m := g.players[name]; m != nil && m.Room == p.Room {
+		if m := g.players[name]; m.Room == p.Room {
 			out = append(out, m)
 		}
 	}

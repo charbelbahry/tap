@@ -4,17 +4,14 @@ Leftovers and blockers from each phase.
 
 ## Open
 
-- [ ] **Run the real server by hand** (`make run-server` + `nc`). Blocked: `world.Load` is still Role B's stub that returns an error.
-- [ ] **Slow-client test:** a client that stops reading until its 256-line buffer fills gets disconnected, and the others keep receiving. The code exists, there is no test.
-- [ ] **`make lint`:** `golangci-lint` isn't installed on this machine, so it is unverified. Only `go vet` and `gofmt` were run.
-- [ ] **Re-test with Role B's real game:** my tests use the Day 1 stubs (every player starts in the same room). Once B's `newPlayer` and `MOVE` work, add a test that `CHAT ROOM` only reaches players in the same room.
-- [ ] **Group kill credit:** `groupMembersInRoom` is done, but B has to call it. Check it is used when combat lands.
-- [ ] **Add real logging checks** once the server runs: confirm every msg in ROLE_A_PLAN.md step 10 appears with the right level.
-- [ ] **CLI:** try it against another group's server. It has no automated test (tested by hand, piped and under a pseudo-terminal). Windows line editing is untested.
+- [ ] **Merge order:** `feature/gui-bridge` and `main` (Role B's `yaml.v3`) both edited `go.mod`. When merging, keep both `require` lines and run `go mod tidy`.
+- [ ] **Tests on the real world file:** once the bridge is merged, switch `startServer` in `internal/server/server_test.go` to `world.Load("../../data/world.yaml")`. Checked once in a scratch copy: passes.
+- [ ] **`make lint` has one finding left:** `groupMembersInRoom` is unused until Role B calls it for kill credit. Ask Role B to use it, or lint stays red.
+- [ ] **Re-test with Role B's real game handlers** (`LOOK`, `MOVE`, `TAKE`, ...; still stubs on `main`). Then add a test that `CHAT ROOM` only reaches players in the same room.
+- [ ] **CLI:** try it against another group's server. No automated test (tested by hand, piped and under a pseudo-terminal). Windows line editing is untested.
 - [ ] **Bridge with the real page:** `web/app.js` (Role C) does not open a WebSocket yet. Once it does, check in a browser that two tabs are two players, and that the page handles `ERR 900` and a closed socket.
-- [ ] **Bridge in a real browser:** the bridge is tested with a Go WebSocket client only.
-- [ ] **Audit:** run the overengineering and complexity check on phases 1-4, then test against Role B and Role C code when it is on `main`.
 - [ ] **README:** Architecture and Server Logging sections (Phase 5), plus the CLI choice (raw commands) and the bridge design.
+- [ ] **Known, not fixed:** `Server.recent` (connections per IP) is never pruned, so it grows with every distinct IP. Harmless for a school project.
 
 ## Done
 
@@ -22,3 +19,4 @@ Leftovers and blockers from each phase.
 - [x] Phase 2: CHAT, WHO, GROUP, with leadership passing on
 - [x] Phase 3: CLI client with `readline` (merged, PR #4)
 - [x] Phase 4: GUI bridge, WebSocket to TCP (branch `feature/gui-bridge`)
+- [x] Audit 1 (phases 1-4): see `refactor/simplify`. Lint 45 issues down to 1, slow-client, limits, boundary and stress tests added, real server run by hand with the real world file.

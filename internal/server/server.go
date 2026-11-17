@@ -104,9 +104,6 @@ func (s *Server) handleLine(c *client, line string) bool {
 	defer s.mu.Unlock()
 
 	cmd, args := protocol.Split(line)
-	if cmd == "" {
-		return true // ignore blank lines
-	}
 	s.log.Info("command", "ip", c.ip, "player", c.name, "cmd", cmd, "args", args)
 
 	if n := c.cmds.hit(time.Second); n > cmdLimit {
@@ -116,7 +113,8 @@ func (s *Server) handleLine(c *client, line string) bool {
 		s.reply(c, protocol.ErrRateLimited)
 		return true
 	}
-	if !protocol.Valid(line) {
+	// Every line gets exactly one reply, so a blank line is an error too.
+	if cmd == "" || !protocol.Valid(line) {
 		s.reply(c, protocol.ErrBadRequest)
 		return true
 	}

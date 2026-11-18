@@ -55,16 +55,18 @@ type Game struct {
 	nextGroup int
 
 	// Role B
-	roomItems map[string][]string
+	roomItems   map[string][]string
+	dialogueIdx map[string]int
 }
 
 // New creates a game from loaded world data.
 func New(w *world.World, log *slog.Logger) *Game {
 	g := &Game{
-		world:     w,
-		log:       log,
-		players:   map[string]*Player{},
-		roomItems: make(map[string][]string),
+		world:       w,
+		log:         log,
+		players:     map[string]*Player{},
+		roomItems:   make(map[string][]string),
+		dialogueIdx: make(map[string]int),
 	}
 	if w != nil {
 		for id, r := range w.Map.Rooms {

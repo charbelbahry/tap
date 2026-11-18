@@ -65,14 +65,14 @@ Use this checklist to track your milestone execution as you build and test:
   - [x] Implement RFC-compliant JSON response for `LOOK`
   - [x] Implement `MOVE <dir>` exit checks and `EVT ROOM PRESENCE` events
   - [x] Write unit test suite `room_test.go`
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 3 Dynamic Item Lifecycle Uniqueness & Fuzzy Matching internalgameitemgo|Milestone 3: Dynamic Item Engine & Fuzzy Matching]]** (`internal/game/item.go`)
-  - [ ] Implement multi-token fuzzy resolver (full ID, short ID, display name)
-  - [ ] Implement `TAKE`, `DROP`, `INVENTORY` with uniqueness guarantees
-  - [ ] Implement `dropAllItems(p)` on disconnect/death
-  - [ ] Write unit test suite `item_test.go`
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 4 NPC Interaction & Dialogue Engine internalgamenpcgo|Milestone 4: NPC Interaction & Dialogue]]** (`internal/game/npc.go`)
-  - [ ] Implement `TALK <npc>` with dialogue rotation
-  - [ ] Write unit test suite `npc_test.go`
+- [x] **[[03 - Role B Plan & Milestones#Milestone 3 Dynamic Item Lifecycle Uniqueness & Fuzzy Matching internalgameitemgo|Milestone 3: Dynamic Item Engine & Fuzzy Matching]]** (`internal/game/item.go`)
+  - [x] Implement multi-token fuzzy resolver (full ID, short ID, display name)
+  - [x] Implement `TAKE`, `DROP`, `INVENTORY` with uniqueness guarantees
+  - [x] Implement `dropAllItems(p)` on disconnect/death
+  - [x] Write unit test suite `item_test.go`
+- [x] **[[03 - Role B Plan & Milestones#Milestone 4 NPC Interaction & Dialogue Engine internalgamenpcgo|Milestone 4: NPC Interaction & Dialogue]]** (`internal/game/npc.go`)
+  - [x] Implement `TALK <npc>` with dialogue rotation
+  - [x] Write unit test suite `npc_test.go`
 - [ ] **[[03 - Role B Plan & Milestones#Milestone 5 Turn-Based Combat Engine Initiative & Respawn internalgamecombatgo|Milestone 5: Turn-Based Combat & Death Cycle]]** (`internal/game/combat.go`)
   - [ ] Implement `ATTACK` with damage formula + counterattack
   - [ ] Implement `DEFEND` (halves incoming damage) and `FLEE` (random exit + free hit)

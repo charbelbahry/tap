@@ -111,8 +111,8 @@ func TestMove_ValidAndInvalidExits(t *testing.T) {
 
 	// 2. Empty direction
 	res = g.Handle("adventurer", "MOVE", "")
-	if res.Reply != protocol.ErrNoExit {
-		t.Errorf("expected %q for empty direction, got %q", protocol.ErrNoExit, res.Reply)
+	if res.Reply != protocol.ErrBadRequest {
+		t.Errorf("expected %q for empty direction, got %q", protocol.ErrBadRequest, res.Reply)
 	}
 
 	// 3. Valid exit to east

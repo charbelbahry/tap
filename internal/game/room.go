@@ -1,5 +1,4 @@
 // Owner: Role B.
-// Package game implements room inspection and player navigation.
 
 package game
 
@@ -9,7 +8,6 @@ import (
 	"strings"
 
 	"github.com/charbelbahry/tap/internal/protocol"
-	"github.com/charbelbahry/tap/internal/world"
 )
 
 type lookRoom struct {
@@ -26,25 +24,11 @@ type lookResponse struct {
 	NPCs    []string `json:"npcs"`
 }
 
-// nonNil returns s if not nil, otherwise an empty slice.
-// Cyclomatic Complexity: 2 (base 1 + 1 if)
-func nonNil(s []string) []string {
-	if s == nil {
-		return []string{}
-	}
-	return s
-}
-
 // newPlayer creates a player in the start room with full health (100 HP).
-// Cyclomatic Complexity: 3 (base 1 + 2 ifs)
 func (g *Game) newPlayer(name string) *Player {
-	startRoom := "loc.votive_chapel"
-	if g.world != nil && g.world.Map.Start != "" {
-		startRoom = g.world.Map.Start
-	}
 	return &Player{
 		Name:      name,
-		Room:      startRoom,
+		Room:      g.world.Map.Start,
 		HP:        100,
 		MaxHP:     100,
 		Inventory: []string{},
@@ -52,54 +36,52 @@ func (g *Game) newPlayer(name string) *Player {
 }
 
 // look handles LOOK. Reply: OK <room JSON> (RFC 42TAP section 5.1.2).
-// Cyclomatic Complexity: 5 (base 1 + 4 ifs)
 func (g *Game) look(p *Player) Result {
-	roomID := p.Room
-	var r world.Room
-	if g.world != nil {
-		if found, ok := g.world.Map.Rooms[roomID]; ok {
-			r = found
-		}
-	}
-	if r.Name == "" {
-		r.Name = roomID
-	}
-
+	r := g.world.Map.Rooms[p.Room]
 	exits := r.Exits
 	if exits == nil {
 		exits = map[string]string{}
 	}
 
-	players := nonNil(g.namesInRoom(roomID))
+	players := g.namesInRoom(p.Room)
+	if players == nil {
+		players = []string{}
+	}
 	sort.Strings(players)
+
+	items := g.roomItems[p.Room]
+	if items == nil {
+		items = []string{}
+	}
+
+	npcs := r.NPCs
+	if npcs == nil {
+		npcs = []string{}
+	}
 
 	resp := lookResponse{
 		Room: lookRoom{
-			ID:          roomID,
+			ID:          p.Room,
 			Name:        r.Name,
 			Description: r.Description,
 			Exits:       exits,
 		},
 		Players: players,
-		Items:   nonNil(g.roomItems[roomID]),
-		NPCs:    nonNil(r.NPCs),
+		Items:   items,
+		NPCs:    npcs,
 	}
 
-	data, err := json.Marshal(resp)
-	if err != nil {
-		return Result{Reply: protocol.ErrBadRequest}
-	}
+	data, _ := json.Marshal(resp)
 	return Result{Reply: "OK " + string(data)}
 }
 
 // move handles MOVE <direction>.
-// Replies: OK room=<room-id>, ERR 301 NO_EXIT.
+// Replies: OK room=<room-id>, ERR 400 BAD_REQUEST, ERR 301 NO_EXIT.
 // Events: ROOM PRESENCE LEAVE to old room, ROOM PRESENCE ENTER to new room.
-// Cyclomatic Complexity: 5 (base 1 + 4 ifs)
 func (g *Game) move(p *Player, args string) Result {
 	dir := strings.ToLower(strings.TrimSpace(args))
-	if dir == "" || g.world == nil {
-		return Result{Reply: protocol.ErrNoExit}
+	if dir == "" {
+		return Result{Reply: protocol.ErrBadRequest}
 	}
 
 	target := g.world.Map.Rooms[p.Room].Exits[dir]
@@ -121,7 +103,6 @@ func (g *Game) move(p *Player, args string) Result {
 }
 
 // presenceEvents builds leave events for the old room and enter events for the new room.
-// Cyclomatic Complexity: 3 (base 1 + 2 ifs)
 func (g *Game) presenceEvents(oldRoom string, p *Player) []Event {
 	var events []Event
 	if leave := g.namesInRoom(oldRoom); len(leave) > 0 {

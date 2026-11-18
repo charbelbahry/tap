@@ -35,9 +35,10 @@ type Player struct {
 	Invite *Group // Role A: last group this player was invited to
 
 	// Role B
-	HP        int
-	MaxHP     int
-	Inventory []string
+	HP          int
+	MaxHP       int
+	DamageBonus int
+	Inventory   []string
 }
 
 // Group members are kept in join order. Members[0] is the leader.

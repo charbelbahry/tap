@@ -15,3 +15,9 @@ func (g *Game) quests(p *Player) Result {
 	// TODO(B)
 	return Result{Reply: "OK []"}
 }
+
+// advanceKillQuest records an enemy kill toward active quests.
+func (g *Game) advanceKillQuest(p *Player, npcID string) {
+	// TODO(B): implemented in Milestone 6
+}
+

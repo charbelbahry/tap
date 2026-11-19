@@ -54,7 +54,12 @@ func (g *Game) look(p *Player) Result {
 		items = []string{}
 	}
 
-	npcs := r.NPCs
+	var npcs []string
+	for _, id := range r.NPCs {
+		if g.isNPCAlive(id) {
+			npcs = append(npcs, id)
+		}
+	}
 	if npcs == nil {
 		npcs = []string{}
 	}
@@ -90,6 +95,21 @@ func (g *Game) move(p *Player, args string) Result {
 	}
 
 	oldRoom := p.Room
+
+	// In combat: guaranteed free counterattack hit before moving
+	if p.InCombat {
+		g.combatFreeHit(p)
+		if p.HP <= 0 {
+			g.handlePlayerDeath(p)
+			return Result{
+				Reply:  "OK room=" + p.Room,
+				Events: g.presenceEvents(oldRoom, p),
+			}
+		}
+		p.InCombat = false
+		p.CombatTarget = ""
+	}
+
 	p.Room = target
 
 	if target == g.world.Map.SafeRoom {

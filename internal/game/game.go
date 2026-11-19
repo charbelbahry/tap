@@ -42,6 +42,14 @@ type Player struct {
 	Inventory    []string
 	InCombat     bool
 	CombatTarget string
+	Title        string
+	Quests       map[string]*QuestProgress
+}
+
+// QuestProgress tracks a player's state on one quest.
+type QuestProgress struct {
+	Status string
+	Killed bool
 }
 
 // Group members are kept in join order. Members[0] is the leader.

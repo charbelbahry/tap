@@ -32,6 +32,7 @@ func (g *Game) newPlayer(name string) *Player {
 		HP:        100,
 		MaxHP:     100,
 		Inventory: []string{},
+		Quests:    make(map[string]*QuestProgress),
 	}
 }
 

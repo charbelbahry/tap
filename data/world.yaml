@@ -1,6 +1,5 @@
 # The Last Vigil world data.
-# Owner: Role B. This is a starter with two rooms to show the format.
-# Replace it with the full world from PLAN.md section 7 (11 rooms, 9 NPCs, 8 items, 5 quests).
+# Owner: Role B. Complete 11-room world, 9 NPCs, 8 items, 5 quests.
 
 world:
   start: loc.votive_chapel
@@ -9,20 +8,142 @@ world:
     loc.votive_chapel:
       name: "Votive Chapel"
       description: "Candles burn without wax beneath a roof that fell in long ago. Nothing hostile crosses this threshold."
-      exits: { east: loc.pilgrims_road }
+      exits:
+        east: loc.pilgrims_road
+        north: loc.crypt_gate
       items: [item.pilgrims_candle]
       npcs: [npc.sister_ilvane]
 
     loc.pilgrims_road:
       name: "Pilgrim's Road"
       description: "Grave markers line a road to nowhere. A sentry still walks its post, though most of it has rotted away."
-      exits: { west: loc.votive_chapel }
+      exits:
+        west: loc.votive_chapel
+        east: loc.silent_market
+      items: []
       npcs: [npc.rotting_sentry]
+
+    loc.silent_market:
+      name: "Silent Market"
+      description: "Empty stalls under torn awnings. It would be silent, if not for Zaza."
+      exits:
+        west: loc.pilgrims_road
+        north: loc.hanged_garden
+      items: [item.rusted_censer]
+      npcs: [npc.mute_merchant, npc.zaza]
+
+    loc.hanged_garden:
+      name: "Hanged Garden"
+      description: "Black trees bow under the weight of what hangs from them. Bread rots on a funeral table."
+      exits:
+        south: loc.silent_market
+        north: loc.burned_library
+      items: [item.funeral_bread]
+      npcs: []
+
+    loc.burned_library:
+      name: "Burned Library"
+      description: "Ash falls from the shelves like slow snow. One shroud lies untouched among the cinders."
+      exits:
+        south: loc.hanged_garden
+        west: loc.throne_ruin
+      items: [item.burial_shroud]
+      npcs: []
+
+    loc.throne_ruin:
+      name: "Throne Ruin"
+      description: "King Aurenth's throne stands empty. A knight still guards it, and a stone stair climbs north to the bell."
+      exits:
+        east: loc.burned_library
+        west: loc.ossuary
+        north: loc.bell_tower
+      items: [item.sealed_altar]
+      npcs: [npc.fallen_knight]
+
+    loc.bell_tower:
+      name: "Bell Tower"
+      description: "The great bell hangs above you, ringing with no hand on the rope. Its Warden turns to face you."
+      exits:
+        south: loc.throne_ruin
+      items: []
+      npcs: [npc.bell_warden]
+
+    loc.ossuary:
+      name: "Ossuary"
+      description: "Skulls fill the walls from floor to vault. A cold draught rises from a narrow gap to the west."
+      exits:
+        east: loc.throne_ruin
+        south: loc.crypt_gate
+        west: loc.sunken_stair
+      items: []
+      npcs: [npc.grave_hound]
+
+    loc.crypt_gate:
+      name: "Crypt Gate"
+      description: "A rusted portcullis, half raised. Old Corvin keeps digging, though the ground stopped accepting bodies years ago."
+      exits:
+        north: loc.ossuary
+        south: loc.votive_chapel
+      items: []
+      npcs: [npc.old_corvin]
+
+    loc.sunken_stair:
+      name: "Sunken Stair"
+      description: "Steps cut for something larger than a man spiral into black water. Writing covers every wall, the same question repeated."
+      exits:
+        east: loc.ossuary
+        down: loc.hall_answer
+      items: [item.heralds_scroll]
+      npcs: []
+
+    loc.hall_answer:
+      name: "Hall of the Answer"
+      description: "A vault older than Morvane. This is where the bell's call truly went, and what answered it is still here."
+      exits:
+        up: loc.sunken_stair
+      items: []
+      npcs: [npc.baal]
 
 items:
   item.pilgrims_candle:
     name: "Pilgrim's Candle"
     description: "A stub of wax that refuses to burn down."
+    obtainable: true
+
+  item.rusted_censer:
+    name: "Rusted Censer"
+    description: "Cold iron that still smells faintly of bitter herbs."
+    obtainable: true
+
+  item.funeral_bread:
+    name: "Funeral Bread"
+    description: "Hard as slate and untouched by mold."
+    obtainable: true
+
+  item.burial_shroud:
+    name: "Burial Shroud"
+    description: "Linen stained with salt and cedar oil."
+    obtainable: true
+
+  item.heralds_scroll:
+    name: "Herald's Scroll"
+    description: "Parchment stiff with dried brine. The question is written here, over and over."
+    obtainable: true
+
+  item.sealed_altar:
+    name: "Sealed Altar"
+    description: "Lead-poured stone. Whatever was placed inside was never meant to be taken."
+    obtainable: false
+
+  item.vergers_hammer:
+    name: "Verger's Hammer"
+    description: "An iron mallet notched by years of driving boundary stakes."
+    obtainable: true
+    damage_bonus: 6
+
+  item.unspoken_question:
+    name: "The Unspoken Question"
+    description: "A slip of blackened foil. The ink seems to move when you look away."
     obtainable: true
 
 npcs:
@@ -34,12 +155,65 @@ npcs:
       - "The flame holds you here, Vigilant. I am sorry for that."
       - "Every time you fall, the candle pulls you back. It has never asked if you wanted that."
 
+  npc.old_corvin:
+    name: "Old Corvin"
+    description: "Forty years digging and not one of them stays down."
+    role: quest_giver
+    dialogue:
+      - "Mind your footing, stranger. The dirt is sour here."
+      - "Forty years digging and not one of them stays down."
+
+  npc.mute_merchant:
+    name: "Mute Merchant"
+    description: "Hasn't spoken in ninety years; communicates in gestures."
+    role: dialogue
+    dialogue:
+      - "(The merchant holds up a coin, studies it for a long time, and puts it away.)"
+      - "(He gestures toward the northern arch, then taps his throat and shakes his head.)"
+
+  npc.zaza:
+    name: "Zaza"
+    description: "The king's former herald. He read the question aloud, and the answer broke his mind."
+    role: quest_giver
+    dialogue:
+      - "Should I go to the tower? The tower is awful. Should I stay? Staying is awful. Should I sit? I tried sitting during the second eclipse. Terrible. Would not sit again."
+      - "The merchant has not said a word in ninety years and still wins every argument. Ninety years! I was counting. I lost count. That is the merchant's fault too."
+      - "There was something under the bell. Under it! And I read it the question out loud, and it answered, and now I cannot decide which boot goes first. Do NOT ask me about the stair."
+
   npc.rotting_sentry:
     name: "Rotting Sentry"
     description: "Still guarding a road nobody uses."
     role: enemy
     dialogue: ["Halt. Halt. Halt. Halt."]
     stats: { hp: 30, damage_min: 4, damage_max: 8 }
+
+  npc.grave_hound:
+    name: "Grave Hound"
+    description: "Growls from somewhere behind its ribs."
+    role: enemy
+    dialogue: ["(A wet rattle rises from its bare throat.)"]
+    stats: { hp: 40, damage_min: 6, damage_max: 10 }
+
+  npc.fallen_knight:
+    name: "Fallen Knight"
+    description: "Sworn to a king who no longer exists."
+    role: enemy
+    dialogue: ["For Morvane. For the King. For the silence."]
+    stats: { hp: 80, damage_min: 8, damage_max: 12 }
+
+  npc.bell_warden:
+    name: "Bell Warden"
+    description: "Guardian of the bell."
+    role: enemy
+    dialogue: ["It has been asked. It will not be asked again."]
+    stats: { hp: 150, damage_min: 10, damage_max: 16 }
+
+  npc.baal:
+    name: "Baal"
+    description: "The thing that answered. Calm, ancient and amused."
+    role: enemy
+    dialogue: ["All of you come to ask. I gave your king exactly what he wanted."]
+    stats: { hp: 300, damage_min: 15, damage_max: 25 }
 
 quests:
   road_without_watchers:
@@ -48,3 +222,34 @@ quests:
     description: "Destroy the Rotting Sentry on Pilgrim's Road."
     objective: { kill: npc.rotting_sentry }
     reward: { damage_bonus: 2 }
+
+  a_proper_burial:
+    title: "A Proper Burial"
+    giver: npc.old_corvin
+    description: "Deliver the Burial Shroud."
+    objective: { deliver: item.burial_shroud }
+    reward: { item: item.vergers_hammer, max_hp_bonus: 20 }
+
+  the_last_toll:
+    title: "The Last Toll"
+    giver: npc.sister_ilvane
+    description: "Silence the Bell Warden in the tower."
+    needs: road_without_watchers
+    objective: { kill: npc.bell_warden }
+    reward: { damage_bonus: 5, title: "Unbound" }
+
+  what_did_i_come_here_for:
+    title: "What Did I Come Here For?"
+    giver: npc.zaza
+    description: "Bring the Herald's Scroll from the Sunken Stair."
+    needs: the_last_toll
+    objective: { deliver: item.heralds_scroll }
+    reward: { item: item.unspoken_question }
+
+  the_unanswering:
+    title: "The Unanswering"
+    giver: npc.zaza
+    description: "Take the question back to Baal in the Hall of the Answer and destroy it."
+    needs: what_did_i_come_here_for
+    objective: { kill: npc.baal }
+    reward: { title: "The Unanswered" }

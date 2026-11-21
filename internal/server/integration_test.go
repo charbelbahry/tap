@@ -7,6 +7,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 )
 
 // Room-based behaviour: Role A's events and chat against Role B's LOOK and MOVE,
@@ -129,3 +130,75 @@ func TestGroupWorksAcrossRooms(t *testing.T) {
 	expect(t, a, ra, "EVT GROUP CHAT alice can you hear me")
 	expect(t, b, rb, "EVT GROUP CHAT alice can you hear me")
 }
+
+// TestFullGameplayLifecycleOverTCP verifies end-to-end player lifecycle:
+// STATUS, Items (TAKE, INV), Quests (QUEST, QUESTS), Movement, Combat (ATTACK, DEFEND, FLEE), and QUIT.
+func TestFullGameplayLifecycleOverTCP(t *testing.T) {
+	addr := startServer(t)
+	c, r := login(t, addr, "hero")
+	expect(t, c, r, "EVT STATS players=1")
+
+	// 1. Initial STATUS
+	send(t, c, "STATUS\n")
+	expect(t, c, r, `OK {"hp":100,"max_hp":100,"status":"healthy"}`)
+
+	// 2. Initial QUESTS
+	send(t, c, "QUESTS\n")
+	expect(t, c, r, "OK []")
+
+	// 3. Take Item (pilgrims_candle in starting room loc.votive_chapel)
+	send(t, c, "TAKE item.pilgrims_candle\n")
+	expect(t, c, r, "OK taken=item.pilgrims_candle")
+
+	// 4. INV shows the candle
+	send(t, c, "INV\n")
+	line, err := r.ReadString('\n')
+	if err != nil || !strings.Contains(line, "item.pilgrims_candle") {
+		t.Fatalf("unexpected INV reply: %q", line)
+	}
+
+	// 5. Accept quest from Sister Ilvane
+	send(t, c, "QUEST npc.sister_ilvane\n")
+	line, err = r.ReadString('\n')
+	if err != nil || !strings.Contains(line, `"status":"available"`) {
+		t.Fatalf("unexpected QUEST reply: %q", line)
+	}
+
+	// 6. Check QUESTS now has 1 active quest
+	send(t, c, "QUESTS\n")
+	line, err = r.ReadString('\n')
+	if err != nil || !strings.Contains(line, `"quest_id":"road_without_watchers"`) {
+		t.Fatalf("unexpected QUESTS reply: %q", line)
+	}
+
+	// 7. Move east to Pilgrim's Road where npc.rotting_sentry is stationed
+	time.Sleep(1100 * time.Millisecond) // stay within 10 cmds/sec rate limit
+	send(t, c, "MOVE east\n")
+	expect(t, c, r, "OK room=loc.pilgrims_road")
+
+	// 8. ATTACK npc.rotting_sentry
+	send(t, c, "ATTACK npc.rotting_sentry\n")
+	line, err = r.ReadString('\n')
+	if err != nil || !strings.HasPrefix(line, "OK ") {
+		t.Fatalf("unexpected ATTACK reply: %q", line)
+	}
+
+	// 9. DEFEND
+	send(t, c, "DEFEND\n")
+	line, err = r.ReadString('\n')
+	if err != nil || !strings.HasPrefix(line, "OK ") {
+		t.Fatalf("unexpected DEFEND reply: %q", line)
+	}
+
+	// 10. FLEE back to adjacent room
+	send(t, c, "FLEE\n")
+	line, err = r.ReadString('\n')
+	if err != nil || !strings.HasPrefix(line, "OK room=") {
+		t.Fatalf("unexpected FLEE reply: %q", line)
+	}
+
+	// 11. Clean QUIT
+	send(t, c, "QUIT\n")
+	expect(t, c, r, "OK bye")
+}
+

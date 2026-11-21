@@ -10,6 +10,7 @@ import (
 	"time"
 
 	"github.com/charbelbahry/tap/internal/protocol"
+	"github.com/charbelbahry/tap/internal/world"
 )
 
 // isNPCAlive reports whether the NPC is currently alive and revives it if 45s elapsed.
@@ -85,72 +86,94 @@ func (g *Game) recordQuestKill(p *Player, npcID string) {
 	g.advanceKillQuest(p, npcID)
 }
 
+// resolveAttackTarget validates and returns the target NPC for attack.
+func (g *Game) resolveAttackTarget(p *Player, args string) (string, world.NPC, *Result) {
+	if p == nil || strings.TrimSpace(args) == "" {
+		res := Result{Reply: protocol.ErrBadRequest}
+		return "", world.NPC{}, &res
+	}
+	npcID, npc := g.findNPCInRoom(p.Room, args)
+	if npcID == "" || !g.isNPCAlive(npcID) {
+		res := Result{Reply: protocol.ErrNPCNotFound}
+		return "", world.NPC{}, &res
+	}
+	if npc.Role != "enemy" {
+		res := Result{Reply: protocol.ErrNPCNotHostile}
+		return "", world.NPC{}, &res
+	}
+	return npcID, npc, nil
+}
+
+// computePlayerDamage calculates player strike damage against target.
+func (g *Game) computePlayerDamage(p *Player, npcID string) int {
+	if npcID == "npc.baal" && !g.roomHasItem(p.Room, "item.unspoken_question") {
+		return 0
+	}
+	return 8 + rand.Intn(5) + p.DamageBonus
+}
+
+// handleVictory processes enemy defeat, rewards, and notification.
+func (g *Game) handleVictory(p *Player, npcID string, playerDmg int) Result {
+	g.enemyHP[npcID] = 0
+	g.enemyRespawnAt[npcID] = time.Now().Add(45 * time.Second)
+	p.InCombat = false
+	p.CombatTarget = ""
+	g.creditKill(p, npcID)
+
+	resp, _ := json.Marshal(map[string]any{
+		"attacker_hp": p.HP,
+		"target_hp":   0,
+		"damage":      playerDmg,
+		"status":      "victory",
+	})
+	evt := Event{
+		To:   g.namesInRoom(p.Room),
+		Line: "EVT ROOM COMBAT " + p.Name + " " + npcID + " " + string(resp),
+	}
+	return Result{Reply: "OK " + string(resp), Events: []Event{evt}}
+}
+
+// handlePlayerDefeat processes player death in combat.
+func (g *Game) handlePlayerDefeat(p *Player, npcID string, playerDmg int) Result {
+	oldRoom := p.Room
+	g.handlePlayerDeath(p)
+	resp, _ := json.Marshal(map[string]any{
+		"attacker_hp": 50,
+		"target_hp":   g.enemyHP[npcID],
+		"damage":      playerDmg,
+		"status":      "defeat",
+	})
+	events := append([]Event{{
+		To:   g.namesInRoom(oldRoom),
+		Line: "EVT ROOM COMBAT " + p.Name + " " + npcID + " " + string(resp),
+	}}, g.presenceEvents(oldRoom, p)...)
+	return Result{Reply: "OK " + string(resp), Events: events}
+}
+
 // attack handles ATTACK <npc>.
 // Replies: OK {"attacker_hp":..,"target_hp":..,"damage":..,"status":".."},
 // ERR 404 NPC_NOT_FOUND, ERR 405 NPC_NOT_HOSTILE. Event: ROOM COMBAT.
 func (g *Game) attack(p *Player, args string) Result {
-	if p == nil || strings.TrimSpace(args) == "" {
-		return Result{Reply: protocol.ErrBadRequest}
-	}
-
-	npcID, npc := g.findNPCInRoom(p.Room, args)
-	if npcID == "" || !g.isNPCAlive(npcID) {
-		return Result{Reply: protocol.ErrNPCNotFound}
-	}
-	if npc.Role != "enemy" {
-		return Result{Reply: protocol.ErrNPCNotHostile}
+	npcID, npc, errRes := g.resolveAttackTarget(p, args)
+	if errRes != nil {
+		return *errRes
 	}
 
 	if g.enemyHP[npcID] == 0 {
 		g.enemyHP[npcID] = npc.Stats.HP
 	}
 
-	playerDmg := 8 + rand.Intn(5) + p.DamageBonus
-	if npcID == "npc.baal" && !g.roomHasItem(p.Room, "item.unspoken_question") {
-		playerDmg = 0
-	}
-
+	playerDmg := g.computePlayerDamage(p, npcID)
 	g.enemyHP[npcID] -= playerDmg
 	if g.enemyHP[npcID] <= 0 {
-		g.enemyHP[npcID] = 0
-		g.enemyRespawnAt[npcID] = time.Now().Add(45 * time.Second)
-		p.InCombat = false
-		p.CombatTarget = ""
-		g.creditKill(p, npcID)
-
-		resp, _ := json.Marshal(map[string]any{
-			"attacker_hp": p.HP,
-			"target_hp":   0,
-			"damage":      playerDmg,
-			"status":      "victory",
-		})
-		evt := Event{
-			To:   g.namesInRoom(p.Room),
-			Line: "EVT ROOM COMBAT " + p.Name + " " + npcID + " " + string(resp),
-		}
-		return Result{Reply: "OK " + string(resp), Events: []Event{evt}}
+		return g.handleVictory(p, npcID, playerDmg)
 	}
 
 	p.InCombat = true
 	p.CombatTarget = npcID
-
-	enemyDmg := calcDamage(npc.Stats.DamageMin, npc.Stats.DamageMax, 0)
-	p.HP -= enemyDmg
-
+	p.HP -= calcDamage(npc.Stats.DamageMin, npc.Stats.DamageMax, 0)
 	if p.HP <= 0 {
-		oldRoom := p.Room
-		g.handlePlayerDeath(p)
-		resp, _ := json.Marshal(map[string]any{
-			"attacker_hp": 50,
-			"target_hp":   g.enemyHP[npcID],
-			"damage":      playerDmg,
-			"status":      "defeat",
-		})
-		events := append([]Event{{
-			To:   g.namesInRoom(oldRoom),
-			Line: "EVT ROOM COMBAT " + p.Name + " " + npcID + " " + string(resp),
-		}}, g.presenceEvents(oldRoom, p)...)
-		return Result{Reply: "OK " + string(resp), Events: events}
+		return g.handlePlayerDefeat(p, npcID, playerDmg)
 	}
 
 	resp, _ := json.Marshal(map[string]any{
@@ -204,25 +227,27 @@ func (g *Game) defend(p *Player) Result {
 	return Result{Reply: "OK " + string(resp), Events: []Event{evt}}
 }
 
+// randomExit selects an exit room for fleeing.
+func (g *Game) randomExit(roomID string) string {
+	r := g.world.Map.Rooms[roomID]
+	var exits []string
+	for _, target := range r.Exits {
+		exits = append(exits, target)
+	}
+	if len(exits) == 0 {
+		return roomID
+	}
+	sort.Strings(exits)
+	return exits[rand.Intn(len(exits))]
+}
+
 // flee handles FLEE. Replies: OK room=<room-id>, ERR 408 NOT_IN_COMBAT.
 func (g *Game) flee(p *Player) Result {
 	if p == nil || !p.InCombat {
 		return Result{Reply: protocol.ErrNotInCombat}
 	}
 
-	r := g.world.Map.Rooms[p.Room]
-	var exits []string
-	for _, target := range r.Exits {
-		exits = append(exits, target)
-	}
-	sort.Strings(exits)
-
-	targetRoom := p.Room
-	if len(exits) > 0 {
-		targetRoom = exits[rand.Intn(len(exits))]
-	}
-
-	// 50% chance of free hit before fleeing
+	targetRoom := g.randomExit(p.Room)
 	if rand.Intn(2) == 1 {
 		g.combatFreeHit(p)
 		if p.HP <= 0 {

@@ -13,8 +13,8 @@ import (
 	"github.com/charbelbahry/tap/internal/world"
 )
 
-// rewardStr formats a human-readable summary of quest rewards.
-func (g *Game) rewardStr(r world.Reward) string {
+// rewardBonusParts formats stat bonus strings for quest rewards.
+func (g *Game) rewardBonusParts(r world.Reward) []string {
 	var parts []string
 	if r.DamageBonus > 0 {
 		parts = append(parts, fmt.Sprintf("+%d damage", r.DamageBonus))
@@ -22,12 +22,22 @@ func (g *Game) rewardStr(r world.Reward) string {
 	if r.MaxHPBonus > 0 {
 		parts = append(parts, fmt.Sprintf("+%d max HP", r.MaxHPBonus))
 	}
+	return parts
+}
+
+// rewardItemName resolves the display name for a reward item.
+func (g *Game) rewardItemName(itemID string) string {
+	if it, ok := g.world.Items[itemID]; ok && it.Name != "" {
+		return it.Name
+	}
+	return itemID
+}
+
+// rewardStr formats a human-readable summary of quest rewards.
+func (g *Game) rewardStr(r world.Reward) string {
+	parts := g.rewardBonusParts(r)
 	if r.Item != "" {
-		name := r.Item
-		if it, ok := g.world.Items[r.Item]; ok && it.Name != "" {
-			name = it.Name
-		}
-		parts = append(parts, name)
+		parts = append(parts, g.rewardItemName(r.Item))
 	}
 	if r.Title != "" {
 		parts = append(parts, fmt.Sprintf("title %q", r.Title))
@@ -58,29 +68,38 @@ func (g *Game) itemCarriedByAnyone(itemID string) bool {
 	return false
 }
 
-// findGiverQuest selects the active or next available quest for p from giverID.
-func (g *Game) findGiverQuest(p *Player, giverID string) (string, world.Quest) {
-	var candidateIDs []string
+// giverQuestIDs returns sorted list of quest IDs offered by giverID.
+func (g *Game) giverQuestIDs(giverID string) []string {
+	var ids []string
 	for id, q := range g.world.Quests {
 		if q.Giver == giverID {
-			candidateIDs = append(candidateIDs, id)
+			ids = append(ids, id)
 		}
 	}
-	sort.Strings(candidateIDs)
+	sort.Strings(ids)
+	return ids
+}
 
-	for _, id := range candidateIDs {
+// isQuestAvailable reports whether player can accept or work on quest qID.
+func (g *Game) isQuestAvailable(p *Player, qID string, q world.Quest) bool {
+	prog := p.Quests[qID]
+	if prog != nil && prog.Status == "completed" {
+		return false
+	}
+	if q.Needs != "" {
+		req := p.Quests[q.Needs]
+		return req != nil && req.Status == "completed"
+	}
+	return true
+}
+
+// findGiverQuest selects the active or next available quest for p from giverID.
+func (g *Game) findGiverQuest(p *Player, giverID string) (string, world.Quest) {
+	for _, id := range g.giverQuestIDs(giverID) {
 		q := g.world.Quests[id]
-		prog := p.Quests[id]
-		if prog != nil && prog.Status == "completed" {
-			continue
+		if g.isQuestAvailable(p, id, q) {
+			return id, q
 		}
-		if q.Needs != "" {
-			req := p.Quests[q.Needs]
-			if req == nil || req.Status != "completed" {
-				continue
-			}
-		}
-		return id, q
 	}
 	return "", world.Quest{}
 }
@@ -91,71 +110,25 @@ func (g *Game) advanceKillQuest(p *Player, npcID string) {
 		return
 	}
 	for id, prog := range p.Quests {
-		if prog.Status == "active" {
-			q := g.world.Quests[id]
-			if q.Objective.Kill == npcID {
-				prog.Killed = true
-			}
+		if prog.Status == "active" && g.world.Quests[id].Objective.Kill == npcID {
+			prog.Killed = true
 		}
 	}
 }
 
-// quest handles QUEST <npc>: accepts, checks or completes the NPC's next quest.
-// Replies: OK {"quest_id":..,"description":..,"reward":..,"status":".."},
-// ERR 404 NPC_NOT_FOUND, ERR 406 NO_QUEST_AVAILABLE.
-func (g *Game) quest(p *Player, args string) Result {
-	if p == nil || strings.TrimSpace(args) == "" {
-		return Result{Reply: protocol.ErrBadRequest}
-	}
-
-	npcID, _ := g.findNPCInRoom(p.Room, args)
-	if npcID == "" {
-		return Result{Reply: protocol.ErrNPCNotFound}
-	}
-
-	if p.Quests == nil {
-		p.Quests = make(map[string]*QuestProgress)
-	}
-
-	qID, q := g.findGiverQuest(p, npcID)
-	if qID == "" {
-		return Result{Reply: protocol.ErrNoQuest}
-	}
-
-	prog := p.Quests[qID]
-	reward := g.rewardStr(q.Reward)
-
-	// First call: accept quest and return status available
-	if prog == nil {
-		p.Quests[qID] = &QuestProgress{Status: "active"}
-		resp, _ := json.Marshal(map[string]any{
-			"quest_id":    qID,
-			"description": q.Description,
-			"reward":      reward,
-			"status":      "available",
-		})
-		return Result{Reply: "OK " + string(resp)}
-	}
-
-	// Check if objective is met
-	met := false
+// isObjectiveMet checks if the player fulfilled the quest requirements.
+func (g *Game) isObjectiveMet(p *Player, q world.Quest, prog *QuestProgress) bool {
 	if q.Objective.Kill != "" && prog.Killed {
-		met = true
-	} else if q.Objective.Deliver != "" && slices.Contains(p.Inventory, q.Objective.Deliver) {
-		met = true
+		return true
 	}
-
-	if !met {
-		resp, _ := json.Marshal(map[string]any{
-			"quest_id":    qID,
-			"description": q.Description,
-			"reward":      reward,
-			"status":      "active",
-		})
-		return Result{Reply: "OK " + string(resp)}
+	if q.Objective.Deliver != "" && slices.Contains(p.Inventory, q.Objective.Deliver) {
+		return true
 	}
+	return false
+}
 
-	// Complete quest and grant rewards
+// applyQuestRewards grants items, stats, and handles quest item cleanup.
+func (g *Game) applyQuestRewards(p *Player, q world.Quest) {
 	if q.Objective.Deliver != "" {
 		p.Inventory = slices.DeleteFunc(p.Inventory, func(id string) bool { return id == q.Objective.Deliver })
 		spawn := g.findStartingRoomForItem(q.Objective.Deliver)
@@ -177,15 +150,85 @@ func (g *Game) quest(p *Player, args string) Result {
 			p.MaxHP += it.MaxHPBonus
 		}
 	}
+}
 
-	prog.Status = "completed"
+// questResult formats standard QUEST JSON reply.
+func questResult(id, desc, reward, status string) Result {
 	resp, _ := json.Marshal(map[string]any{
-		"quest_id":    qID,
-		"description": q.Description,
+		"quest_id":    id,
+		"description": desc,
 		"reward":      reward,
-		"status":      "completed",
+		"status":      status,
 	})
 	return Result{Reply: "OK " + string(resp)}
+}
+
+// resolveGiverQuest validates player and NPC, ensuring player quests map is initialized.
+func (g *Game) resolveGiverQuest(p *Player, args string) (string, world.Quest, *Result) {
+	if p == nil || strings.TrimSpace(args) == "" {
+		res := Result{Reply: protocol.ErrBadRequest}
+		return "", world.Quest{}, &res
+	}
+	npcID, _ := g.findNPCInRoom(p.Room, args)
+	if npcID == "" {
+		res := Result{Reply: protocol.ErrNPCNotFound}
+		return "", world.Quest{}, &res
+	}
+	if p.Quests == nil {
+		p.Quests = make(map[string]*QuestProgress)
+	}
+	qID, q := g.findGiverQuest(p, npcID)
+	if qID == "" {
+		res := Result{Reply: protocol.ErrNoQuest}
+		return "", world.Quest{}, &res
+	}
+	return qID, q, nil
+}
+
+// quest handles QUEST <npc>: accepts, checks or completes the NPC's next quest.
+// Replies: OK {"quest_id":..,"description":..,"reward":..,"status":".."},
+// ERR 404 NPC_NOT_FOUND, ERR 406 NO_QUEST_AVAILABLE.
+func (g *Game) quest(p *Player, args string) Result {
+	qID, q, errRes := g.resolveGiverQuest(p, args)
+	if errRes != nil {
+		return *errRes
+	}
+
+	prog := p.Quests[qID]
+	reward := g.rewardStr(q.Reward)
+
+	if prog == nil {
+		p.Quests[qID] = &QuestProgress{Status: "active"}
+		return questResult(qID, q.Description, reward, "available")
+	}
+
+	if !g.isObjectiveMet(p, q, prog) {
+		return questResult(qID, q.Description, reward, "active")
+	}
+
+	g.applyQuestRewards(p, q)
+	prog.Status = "completed"
+	return questResult(qID, q.Description, reward, "completed")
+}
+
+// questProgressStr computes 0/1 or 1/1 progress string for active quests.
+func (g *Game) questProgressStr(p *Player, q world.Quest, prog *QuestProgress) string {
+	if prog.Status != "active" {
+		return ""
+	}
+	if q.Objective.Kill != "" {
+		if prog.Killed {
+			return "1/1"
+		}
+		return "0/1"
+	}
+	if q.Objective.Deliver != "" {
+		if slices.Contains(p.Inventory, q.Objective.Deliver) {
+			return "1/1"
+		}
+		return "0/1"
+	}
+	return ""
 }
 
 // quests handles QUESTS. Reply: OK [{"quest_id":..,"status":..,"progress":..}].
@@ -193,7 +236,7 @@ func (g *Game) quests(p *Player) Result {
 	if p == nil {
 		return Result{Reply: protocol.ErrBadRequest}
 	}
-	if p.Quests == nil || len(p.Quests) == 0 {
+	if len(p.Quests) == 0 {
 		return Result{Reply: "OK []"}
 	}
 
@@ -205,30 +248,12 @@ func (g *Game) quests(p *Player) Result {
 
 	var list []map[string]any
 	for _, id := range qIDs {
-		prog := p.Quests[id]
-		q := g.world.Quests[id]
-		progress := ""
-		if prog.Status == "active" {
-			if q.Objective.Kill != "" {
-				if prog.Killed {
-					progress = "1/1"
-				} else {
-					progress = "0/1"
-				}
-			} else if q.Objective.Deliver != "" {
-				if slices.Contains(p.Inventory, q.Objective.Deliver) {
-					progress = "1/1"
-				} else {
-					progress = "0/1"
-				}
-			}
-		}
 		entry := map[string]any{
 			"quest_id": id,
-			"status":   prog.Status,
+			"status":   p.Quests[id].Status,
 		}
-		if progress != "" {
-			entry["progress"] = progress
+		if pr := g.questProgressStr(p, g.world.Quests[id], p.Quests[id]); pr != "" {
+			entry["progress"] = pr
 		}
 		list = append(list, entry)
 	}

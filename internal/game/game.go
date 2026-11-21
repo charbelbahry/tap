@@ -122,7 +122,7 @@ func (g *Game) Handle(name, cmd, args string) Result {
 		return g.take(p, args)
 	case "DROP":
 		return g.drop(p, args)
-	case "INVENTORY":
+	case "INVENTORY", "INV":
 		return g.inventory(p)
 	case "TALK":
 		return g.talk(p, args)

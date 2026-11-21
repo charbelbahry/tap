@@ -249,3 +249,25 @@ quests: {}
 		t.Fatalf("failed validating unmarshaled yaml: %v", err)
 	}
 }
+
+// TestLoad_FullWorldIntegrity verifies that the full 11-room world passes all integrity rules.
+func TestLoad_FullWorldIntegrity(t *testing.T) {
+	w, err := world.Load("../../data/world.yaml")
+	if err != nil {
+		t.Fatalf("expected full world to load successfully, got: %v", err)
+	}
+
+	if len(w.Map.Rooms) != 11 {
+		t.Errorf("expected 11 rooms in full world, got %d", len(w.Map.Rooms))
+	}
+	if len(w.NPCs) != 9 {
+		t.Errorf("expected 9 NPCs in full world, got %d", len(w.NPCs))
+	}
+	if len(w.Items) != 8 {
+		t.Errorf("expected 8 items in full world, got %d", len(w.Items))
+	}
+	if len(w.Quests) != 5 {
+		t.Errorf("expected 5 quests in full world, got %d", len(w.Quests))
+	}
+}
+

@@ -9,6 +9,7 @@ package game
 
 import (
 	"log/slog"
+	"time"
 
 	"github.com/charbelbahry/tap/internal/protocol"
 	"github.com/charbelbahry/tap/internal/world"
@@ -35,10 +36,20 @@ type Player struct {
 	Invite *Group // Role A: last group this player was invited to
 
 	// Role B
-	HP          int
-	MaxHP       int
-	DamageBonus int
-	Inventory   []string
+	HP           int
+	MaxHP        int
+	DamageBonus  int
+	Inventory    []string
+	InCombat     bool
+	CombatTarget string
+	Title        string
+	Quests       map[string]*QuestProgress
+}
+
+// QuestProgress tracks a player's state on one quest.
+type QuestProgress struct {
+	Status string
+	Killed bool
 }
 
 // Group members are kept in join order. Members[0] is the leader.
@@ -55,24 +66,33 @@ type Game struct {
 	nextGroup int
 
 	// Role B
-	roomItems   map[string][]string
-	dialogueIdx map[string]int
+	roomItems      map[string][]string
+	dialogueIdx    map[string]int
+	enemyHP        map[string]int
+	enemyRespawnAt map[string]time.Time
 }
 
 // New creates a game from loaded world data.
 func New(w *world.World, log *slog.Logger) *Game {
 	g := &Game{
-		world:       w,
-		log:         log,
-		players:     map[string]*Player{},
-		roomItems:   make(map[string][]string),
-		dialogueIdx: make(map[string]int),
+		world:          w,
+		log:            log,
+		players:        map[string]*Player{},
+		roomItems:      make(map[string][]string),
+		dialogueIdx:    make(map[string]int),
+		enemyHP:        make(map[string]int),
+		enemyRespawnAt: make(map[string]time.Time),
 	}
 	if w != nil {
 		for id, r := range w.Map.Rooms {
 			items := make([]string, len(r.Items))
 			copy(items, r.Items)
 			g.roomItems[id] = items
+		}
+		for id, n := range w.NPCs {
+			if n.Role == "enemy" {
+				g.enemyHP[id] = n.Stats.HP
+			}
 		}
 	}
 	return g

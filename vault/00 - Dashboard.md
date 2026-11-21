@@ -73,27 +73,27 @@ Use this checklist to track your milestone execution as you build and test:
 - [x] **[[03 - Role B Plan & Milestones#Milestone 4 NPC Interaction & Dialogue Engine internalgamenpcgo|Milestone 4: NPC Interaction & Dialogue]]** (`internal/game/npc.go`)
   - [x] Implement `TALK <npc>` with dialogue rotation
   - [x] Write unit test suite `npc_test.go`
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 5 Turn-Based Combat Engine Initiative & Respawn internalgamecombatgo|Milestone 5: Turn-Based Combat & Death Cycle]]** (`internal/game/combat.go`)
-  - [ ] Implement `ATTACK` with damage formula + counterattack
-  - [ ] Implement `DEFEND` (halves incoming damage) and `FLEE` (random exit + free hit)
-  - [ ] Implement death & safe-room respawn at 50 HP (items kept)
-  - [ ] Implement 45-second enemy respawn timer
-  - [ ] Implement `STATUS` command
-  - [ ] Write unit test suite `combat_test.go`
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 6 Quest Progression State Machine & Party Credit internalgamequestgo|Milestone 6: Quest Progression & Party Credit]]** (`internal/game/quest.go`)
-  - [ ] Implement `QUEST <npc>` state machine (accept, check, complete)
-  - [ ] Implement `QUESTS` listing
-  - [ ] Connect group kill credit (`g.groupMembersInRoom`)
-  - [ ] Handle delivery item return to spawn
-  - [ ] Write unit test suite `quest_test.go`
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 7 11-Room World Assembly & Boss Integration dataworldyaml|Milestone 7: 11-Room World Assembly & Bosses]]** (`data/world.yaml`)
-  - [ ] Construct full 11-room graph with loop and 2 branches
-  - [ ] Implement all 9 NPCs, 8 items, 5 quests
-  - [ ] Implement Bell Warden boss and Baal secret boss mechanics
-- [ ] **[[03 - Role B Plan & Milestones#Milestone 8 Balance Tuning Verification & README Documentation|Milestone 8: README & Evaluation Defense]]**
-  - [ ] Write `Combat System`, `Quest System`, and `World Design` sections in `README.md`
-  - [ ] Pass `go test -race ./...` and `golangci-lint`
-  - [ ] Practice live code change scenarios for peer review
+- [x] **[[03 - Role B Plan & Milestones#Milestone 5 Turn-Based Combat Engine Initiative & Respawn internalgamecombatgo|Milestone 5: Turn-Based Combat & Death Cycle]]** (`internal/game/combat.go`)
+  - [x] Implement `ATTACK` with damage formula + counterattack
+  - [x] Implement `DEFEND` (halves incoming damage) and `FLEE` (random exit + free hit)
+  - [x] Implement death & safe-room respawn at 50 HP (items kept)
+  - [x] Implement 45-second enemy respawn timer
+  - [x] Implement `STATUS` command
+  - [x] Write unit test suite `combat_test.go`
+- [x] **[[03 - Role B Plan & Milestones#Milestone 6 Quest Progression State Machine & Party Credit internalgamequestgo|Milestone 6: Quest Progression & Party Credit]]** (`internal/game/quest.go`)
+  - [x] Implement `QUEST <npc>` state machine (accept, check, complete)
+  - [x] Implement `QUESTS` listing
+  - [x] Connect group kill credit (`g.groupMembersInRoom`)
+  - [x] Handle delivery item return to spawn
+  - [x] Write unit test suite `quest_test.go`
+- [x] **[[03 - Role B Plan & Milestones#Milestone 7 11-Room World Assembly & Boss Integration dataworldyaml|Milestone 7: 11-Room World Assembly & Bosses]]** (`data/world.yaml`)
+  - [x] Construct full 11-room graph with loop and 2 branches
+  - [x] Implement all 9 NPCs, 8 items, 5 quests
+  - [x] Implement Bell Warden boss and Baal secret boss mechanics
+- [x] **[[03 - Role B Plan & Milestones#Milestone 8 Balance Tuning Verification & README Documentation|Milestone 8: README & Evaluation Defense]]**
+  - [x] Write `Combat System`, `Quest System`, and `World Design` sections in `README.md`
+  - [x] Pass `go test -race ./...`
+  - [x] Practice live code change scenarios for peer review
 
 ---
 
